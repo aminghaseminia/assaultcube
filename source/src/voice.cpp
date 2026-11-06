@@ -1,6 +1,6 @@
 // voice.cpp: in-game push-to-talk voice chat (client side)
 //
-// Design: one talker at a time, raw 16-bit mono PCM at 16 kHz, 20 ms frames
+// Design: any number of talkers, raw 16-bit mono PCM at 16 kHz, 20 ms frames
 // (640 bytes). The server only relays frames, it never decodes them.
 //
 // The feature is opt-in on both ends:
@@ -19,7 +19,7 @@ static const int VOICE_FRAME_SAMPLES = 320;                 // 20 ms
 static const int VOICE_FRAME_BYTES   = VOICE_FRAME_SAMPLES * 2;
 static const int VOICE_MAX_WORDS     = VOICE_FRAME_BYTES / 4;
 
-VARP(voicechat, 0, 0, 1);          // persisted; off by default
+VARP(voicechat, 0, 1, 1);          // on by default: push-to-talk cannot be a hot mic
 VARP(voicevolume, 0, 100, 200);    // playback volume, percent
 VARP(voiceinputgain, 0, 100, 300); // microphone gain, percent
 
@@ -34,16 +34,53 @@ static int lastprobe = -10000, probes = 0;
 static ENetPeer *lastpeer = NULL;
 
 static ushort outseq = 0;
-static ushort lastinseq = 0;
-static int lastincn = -1;
+
+// every remote talker gets its own small frame queue; the mixer sums one
+// 20 ms frame from each active queue per tick, so any number of people can
+// hold X at the same time
+static const int VOICE_STREAM_FRAMES = 8;
+struct voicestream
+{
+    bool active;
+    ushort seq;
+    int lastmillis;
+    short frames[VOICE_STREAM_FRAMES][VOICE_FRAME_SAMPLES];
+    int head, count;
+};
+static voicestream streams[MAXPLAYERS];
+static int lastmix = -10000;
+
+static void voice_stream_reset(voicestream &s)
+{
+    s.active = false;
+    s.seq = 0;
+    s.lastmillis = 0;
+    s.head = s.count = 0;
+}
+
+static void voice_streams_clear()
+{
+    loopi(MAXPLAYERS) voice_stream_reset(streams[i]);
+}
+
+static void voice_stream_push(voicestream &s, const short *data)
+{
+    if(s.count >= VOICE_STREAM_FRAMES)
+    {
+        // queue is full: drop the oldest frame to keep latency down
+        s.head = (s.head + 1) % VOICE_STREAM_FRAMES;
+        s.count--;
+    }
+    int idx = (s.head + s.count) % VOICE_STREAM_FRAMES;
+    memcpy(s.frames[idx], data, VOICE_FRAME_BYTES);
+    s.count++;
+}
 
 static uchar framebuf[VOICE_FRAME_BYTES];
 static int framelen = 0;
 
 static void voice_stop();
 static void voice_start();
-
-static short inbuf[VOICE_FRAME_SAMPLES];
 
 static bool voice_audio_init()
 {
@@ -126,29 +163,59 @@ static bool voice_open_capture()
     return true;
 }
 
-static void voice_queue(const short *samples, int count)
+static void voice_output(const short *samples, int count)
 {
     if(!outdev || count <= 0) return;
-
-    // cap latency at roughly 120 ms; drop instead of growing an ever longer delay
-    if(SDL_GetQueuedAudioSize(outdev) > (Uint32)(VOICE_FRAME_BYTES * 6)) return;
-
-    int vol = voicevolume;
-    for(int i = 0; i < count; i++)
-    {
-        int s = samples[i] * vol / 100;
-        inbuf[i] = (short)clamp(s, -32768, 32767);
-    }
 
     uchar converted[4096];
     if(outstream)
     {
-        if(SDL_AudioStreamPut(outstream, inbuf, count * 2) < 0) return;
+        if(SDL_AudioStreamPut(outstream, samples, count * 2) < 0) return;
         int got;
         while((got = SDL_AudioStreamGet(outstream, converted, sizeof(converted))) > 0)
             SDL_QueueAudio(outdev, converted, got);
     }
-    else SDL_QueueAudio(outdev, inbuf, count * 2);
+    else SDL_QueueAudio(outdev, samples, count * 2);
+}
+
+// Sum one frame from every active speaker. This is what makes simultaneous
+// push-to-talk work: N people can hold X and all of them are audible.
+static void voice_mix()
+{
+    if(!outdev) return;
+    if(SDL_GetQueuedAudioSize(outdev) > (Uint32)(VOICE_FRAME_BYTES * 6)) return;
+
+    int mix[VOICE_FRAME_SAMPLES];
+    memset(mix, 0, sizeof(mix));
+    int speakers = 0;
+
+    loopi(MAXPLAYERS)
+    {
+        voicestream &s = streams[i];
+        if(!s.active) continue;
+        if(s.count > 0)
+        {
+            short *f = s.frames[s.head];
+            s.head = (s.head + 1) % VOICE_STREAM_FRAMES;
+            s.count--;
+            for(int j = 0; j < VOICE_FRAME_SAMPLES; j++) mix[j] += f[j];
+            speakers++;
+        }
+        else if(totalmillis - s.lastmillis > 300)
+        {
+            s.active = false;
+        }
+    }
+    if(!speakers) return;
+
+    short out[VOICE_FRAME_SAMPLES];
+    int vol = voicevolume;
+    for(int i = 0; i < VOICE_FRAME_SAMPLES; i++)
+    {
+        int v = mix[i] * vol / 100;
+        out[i] = (short)clamp(v, -32768, 32767);
+    }
+    voice_output(out, VOICE_FRAME_SAMPLES);
 }
 
 static void voice_send_frame(const uchar *data, int len)
@@ -177,7 +244,12 @@ void voicesupport(int supported)
 {
     int before = voicesupported;
     voicesupported = supported ? 1 : 0;
-    if(!voicesupported) voice_stop();
+    if(!voicesupported)
+    {
+        voice_stop();
+        voice_streams_clear();
+        if(outdev) SDL_ClearQueuedAudio(outdev);
+    }
     if(!voicechat) return;
     if(voicesupported != before)
     {
@@ -206,31 +278,37 @@ void voicereceive(int cn, int seq, int n, ucharbuf &p)
         samples[i * 2] = (short)(v & 0xFFFF);
         samples[i * 2 + 1] = (short)((v >> 16) & 0xFFFF);
     }
+    for(int i = n * 2; i < VOICE_FRAME_SAMPLES; i++) samples[i] = 0;
 
     if(!voicechat || !player1 || cn == player1->clientnum || n <= 0) return;
+    if(cn < 0 || cn >= MAXPLAYERS) return;
     playerent *d = getclient(cn);
     if(d && (d->muted || d->ignored)) return; // respect the scoreboard mute
     if(!voice_open_output()) return;
 
-    if(cn != lastincn)
+    voicestream &s = streams[cn];
+    ushort q = (ushort)seq;
+
+    if(!s.active)
     {
-        lastincn = cn;
-        lastinseq = (ushort)(seq - 1); // treat this frame as the next one
+        s.active = true;
+        s.seq = (ushort)(q - 1); // treat this frame as the next one
+        s.head = s.count = 0;
+        s.lastmillis = totalmillis;
         clientlogf("voice: receiving audio from cn %d", cn);
     }
 
-    ushort s = (ushort)seq;
-    ushort gap = (ushort)(s - lastinseq);
+    ushort gap = (ushort)(q - s.seq);
     if(gap == 0 || gap > 0x8000) return; // duplicate or too old
-    if(gap > 1 && gap <= 8)
+    if(gap > 1 && gap <= 4)
     {
-        // conceal a small gap with silence to keep the timing intact
+        // conceal a small gap with silence to keep this speaker's timing
         static short silence[VOICE_FRAME_SAMPLES] = { 0 };
-        for(int i = 1; i < gap; i++) voice_queue(silence, VOICE_FRAME_SAMPLES);
+        for(int i = 1; i < gap; i++) voice_stream_push(s, silence);
     }
-    lastinseq = s;
-
-    voice_queue(samples, n * 2);
+    s.seq = q;
+    s.lastmillis = totalmillis;
+    voice_stream_push(s, samples);
 }
 
 static void voice_stop()
@@ -319,6 +397,8 @@ void togglevoice()
     {
         pttheld = false;
         voice_stop();
+        voice_streams_clear();
+        if(outdev) SDL_ClearQueuedAudio(outdev); // stop any buffered remote audio now
         voicechat = 0;
         hudoutf("Voice chat: OFF");
     }
@@ -348,8 +428,13 @@ void voiceupdate()
         voicesupported = -1;
         lastprobe = -10000;
         probes = 0;
-        lastincn = -1;
-        if(!curpeer) voice_stop();
+        voice_streams_clear();
+        lastmix = totalmillis;
+        if(!curpeer)
+        {
+            voice_stop();
+            if(outdev) SDL_ClearQueuedAudio(outdev);
+        }
     }
     if(!curpeer) return;
 
@@ -379,6 +464,14 @@ void voiceupdate()
         testlast = totalmillis;
         testframes--;
         voice_send_frame((uchar *)tone, VOICE_FRAME_BYTES);
+    }
+
+    // mix whatever remote speakers have queued; this runs even when we are not
+    // transmitting ourselves
+    if(voicechat && totalmillis - lastmix >= 20)
+    {
+        lastmix = totalmillis;
+        voice_mix();
     }
 
     if(!talking)
@@ -417,6 +510,7 @@ void voiceupdate()
 
 void voicecleanup()
 {
+    voice_streams_clear();
     if(capdev)
     {
         SDL_CloseAudioDevice(capdev);

@@ -1,7 +1,8 @@
 # In-game voice chat
 
-Push-to-talk voice chat for multiplayer games. It is **off by default** on both
-the client and the server, and it is only available in multiplayer.
+Push-to-talk voice chat for multiplayer games. On the client it is **on by
+default**; the server must be started with `-R`. Any number of players can hold
+X at the same time and everyone hears all of them.
 
 ## Quick start
 
@@ -20,20 +21,31 @@ Without `-R` the server stays silent and clients are told
 **Client**
 
 1. Join a multiplayer server.
-2. Press **F9**. You will see `Voice chat: ON - hold X to talk`.
+2. Voice chat is already enabled. Hold **X** to talk, release to stop.
    On macOS the first use asks for microphone permission — allow it.
-3. Hold **X** to talk, release to stop. Only one person can talk at a time.
-4. Press **F9** again to turn it off: `Voice chat: OFF`.
+3. Press **F9** to turn voice chat off (`Voice chat: OFF`), and F9 again to
+   turn it back on (`Voice chat: ON - hold X to talk`).
 
-If you press **X** while voice chat is off, the game tells you to press F9.
-If someone else is already talking, your audio is dropped and their name is
-shown on screen.
+Since it is push-to-talk, leaving it enabled cannot create a hot microphone.
+If you press X while voice chat is off, the game reminds you to press F9.
+
+## Several people talking at once
+
+Every player who holds X is transmitted. Each client receives one stream per
+speaker, buffers it separately, and sums them in 20 ms steps before playback.
+
+Practical consequences:
+
+- No one has to wait for the channel to be free.
+- Simultaneous loud speakers are clamped at full scale, so extreme overlap can
+  sound clipped. Speech normally does not reach that point.
+- Each extra talker costs bandwidth for every listener (see below).
 
 ## Settings
 
 | Setting | Default | Meaning |
 |---|---|---|
-| `voicechat` | `0` | Master switch. F9 toggles it and it is saved. |
+| `voicechat` | `1` | Master switch. F9 toggles it and it is saved. |
 | `voicevolume` | `100` | Playback volume, 0–200 %. |
 | `voiceinputgain` | `100` | Microphone gain, 0–300 %. |
 | `sv_voice` | `0` | Server switch. Standalone servers use `-R`. |
@@ -51,7 +63,7 @@ The existing scoreboard **mute/ignore** also silences that player's voice.
 ## Requirements
 
 - **Headphones.** There is no echo cancellation; with speakers everyone will
-  hear themselves.
+  hear themselves, and with several talkers that gets worse quickly.
 - A microphone the OS can access. On macOS grant microphone permission to the
   game (or to the terminal/app that launches it).
 - For voice itself, both sides need this build. Stock AssaultCube clients can
@@ -59,13 +71,14 @@ The existing scoreboard **mute/ignore** also silences that player's voice.
 
 ## What it costs
 
-Raw 16-bit mono PCM at 16 kHz, 20 ms frames (640 bytes per frame).
-Because the protocol encodes integers, a frame is roughly 700–800 bytes on the
-wire, so about **35–40 KB/s while someone is talking**.
+Raw 16-bit mono PCM at 16 kHz, 20 ms frames (640 bytes per frame). Because the
+protocol encodes integers, a frame is roughly 700–800 bytes on the wire, so
+about **35–40 KB/s per person talking**.
 
-- LAN: negligible.
-- Internet: usable for a few players, but this is not Opus. The server forwards
-  one stream to every listener, so 8 listeners cost the server ~300 KB/s.
+The server forwards every talker to every listener. Eight people talking at
+once therefore costs each listener roughly 300 KB/s and the server roughly
+2.4 MB/s of upstream traffic. That is fine on a LAN; for internet play, keep the
+number of simultaneous talkers low.
 
 ## How it works (and why it is safe)
 
@@ -76,10 +89,10 @@ wire, so about **35–40 KB/s while someone is talking**.
 - Four message types were added at the end of the protocol, and
   `PROTOCOL_VERSION` was **not** changed. Patched and stock copies still
   interoperate; voice is simply unavailable in a mixed pair.
-- The server never decodes audio. It relays frames, enforces one talker at a
-  time, and applies a token-bucket rate limit.
+- The server never decodes audio. It relays frames and applies a per-client
+  token-bucket rate limit.
 - Voice is **not** written into demo recordings.
-- If the talker disappears, the channel is released after 500 ms of silence.
+- A speaker's "talking" flag is cleared after 500 ms without frames.
 
 ## Commands
 
@@ -94,8 +107,9 @@ voicetest 1000       // diagnostic: send 1 second of a test tone
 
 ## Limitations
 
-- One speaker at a time (walkie-talkie style), not full duplex.
 - No echo cancellation, noise suppression, or automatic gain control.
 - No Opus; raw PCM only.
 - No per-player volume slider (global volume plus the scoreboard mute).
 - Voice is intentionally not available in singleplayer/bot games.
+- All simultaneous speakers are mixed; there is no separate panning or
+  positional audio.

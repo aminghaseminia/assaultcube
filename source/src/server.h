@@ -249,6 +249,7 @@ struct client                   // server side version of "dynent" type
     int connectmillis, ldt, spj;
     int mute, spam, lastvc; // server side voice comm spam control
     int voicelast, voicebudget; // voice chat token bucket (frames per 20 ms)
+    bool voiceactive; // currently transmitting
     int acversion, acbuildtype;
     bool isauthed; // for passworded servers
     bool needsauth;
@@ -337,6 +338,7 @@ struct client                   // server side version of "dynent" type
         freshgame = false;         // don't spawn into running games
         mute = spam = lastvc = badspeech = badmillis = nvotes = 0;
         voicelast = voicebudget = 0;
+        voiceactive = false;
         voicecapable = false;
         ispaused = 0;
     }

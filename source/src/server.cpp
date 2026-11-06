@@ -117,14 +117,14 @@ int shuffleskillthreshold = 200;
 int totalclients = 0;
 int cn2boot;
 
-// in-game voice chat: the server only relays raw PCM frames, one talker at a time
+// in-game voice chat: the server only relays raw PCM frames. Any number of
+// clients may transmit at once; every listener mixes them locally.
 #ifdef STANDALONE
 int sv_voice = 0, sv_voiceteam = 0;             // -R enables; no VARP in the standalone build
 #else
 VARP(sv_voice, 0, 0, 1);
 VARP(sv_voiceteam, 0, 0, 1);
 #endif
-int voiceowner = -1, voicelastsound = 0;
 
 // synchronising the worker threads...
 const char *endis[] = { "disabled", "enabled", "" };
@@ -2848,9 +2848,9 @@ void disconnect_client(int n, int reason)
     if(reason>=0) mlog(ACLOG_INFO, "[%s] disconnecting client %s (%s) cn %d, %d seconds played%s", c.hostname, c.name, disc_reason(reason), n, sp, scoresaved);
     else mlog(ACLOG_INFO, "[%s] disconnected client %s cn %d, %d seconds played%s", c.hostname, c.name, n, sp, scoresaved);
     totalclients--;
-    if(voiceowner == n)
+    if(c.voiceactive)
     {
-        voiceowner = -1;
+        c.voiceactive = false;
         sendvoicestate(n, 0);
     }
     c.peer->data = (void *)-1;
@@ -3552,15 +3552,12 @@ void process(ENetPacket *packet, int sender, int chan)
                 if(cl->voicebudget < 20) break;
                 cl->voicebudget -= 20;
 
-                if(voiceowner < 0)
+                if(!cl->voiceactive)
                 {
-                    voiceowner = sender;
-                    voicelastsound = servmillis;
+                    cl->voiceactive = true;
                     sendvoicestate(sender, 1);
-                    mlog(ACLOG_INFO, "voice: %s has the microphone", cl->name);
+                    mlog(ACLOG_INFO, "voice: %s is talking", cl->name);
                 }
-                if(voiceowner != sender) break; // someone else has the microphone
-                voicelastsound = servmillis;
                 packetbuf out(MAXTRANS);
                 putint(out, SV_VOICEDATA);
                 putint(out, sender);
@@ -3581,9 +3578,9 @@ void process(ENetPacket *packet, int sender, int chan)
 
             case SV_VOICEOFF:
             {
-                if(valid_client(sender) && voiceowner == sender)
+                if(valid_client(sender) && cl->voiceactive)
                 {
-                    voiceowner = -1;
+                    cl->voiceactive = false;
                     sendvoicestate(sender, 0);
                 }
             }
@@ -4644,12 +4641,11 @@ void serverslice(uint timeout)   // main server update, called from cube main lo
     servmillis = nextmillis;
     entropy_add_byte(diff);
 
-    // release the voice channel if the talker vanished (crash, packet loss, alt-tab)
-    if(voiceowner >= 0 && servmillis - voicelastsound > 500)
+    // clear the "talking" flag for anyone who stopped sending (crash, loss, alt-tab)
+    loopv(clients) if(clients[i]->voiceactive && servmillis - clients[i]->voicelast > 500)
     {
-        int o = voiceowner;
-        voiceowner = -1;
-        sendvoicestate(o, 0);
+        clients[i]->voiceactive = false;
+        sendvoicestate(i, 0);
     }
 
 #ifndef STANDALONE
@@ -5040,7 +5036,7 @@ void initserver(bool dedicated)
     mlog(ACLOG_INFO, "logging local AssaultCube server (version %d, protocol %d/%d) now..", AC_VERSION, SERVER_PROTOCOL_VERSION, EXT_VERSION);
 
     if(scl.voice) sv_voice = 1;
-    mlog(ACLOG_INFO, "in-game voice chat is %s", sv_voice ? "enabled (one talker at a time)" : "disabled (start with -R to enable)");
+    mlog(ACLOG_INFO, "in-game voice chat is %s", sv_voice ? "enabled (clients mix simultaneous speakers)" : "disabled (start with -R to enable)");
 
     copystring(sg->servdesc_current, scl.servdesc_full);
     servermsinit(dedicated);
