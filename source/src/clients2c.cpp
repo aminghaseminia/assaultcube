@@ -432,6 +432,28 @@ void parsemessages(int cn, playerent *d, ucharbuf &p, bool demo = false)
                 break;
             }
 
+            case SV_VOICESUPPORT:
+                voicesupport(getint(p));
+                break;
+
+            case SV_VOICESTATE:
+            {
+                int cn = getint(p);
+                int on = getint(p);
+                voicestate(cn, on);
+                break;
+            }
+
+            case SV_VOICEDATA:
+            {
+                int cn = getint(p);
+                int seq = getint(p);
+                int n = getint(p);
+                if(n < 0 || n > 160) { p.len = 0; break; } // malformed; drop the rest of the packet
+                voicereceive(cn, seq, n, p);
+                break;
+            }
+
             case SV_TEAMTEXTME:
             case SV_TEAMTEXT:
             {

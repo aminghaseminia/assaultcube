@@ -606,6 +606,7 @@ static const int msgsizes[] =               // size inclusive message token, 0 f
     SV_MAPIDENT, 3, SV_DEMOCHECKSUM, 0, SV_DEMOSIGNATURE, 0,
     SV_PAUSEMODE, 1,
     SV_GETVITA, 2, SV_VITADATA, 0,
+    SV_VOICEDATA, 0, SV_VOICEOFF, 1, SV_VOICESUPPORT, 2, SV_VOICESTATE, 3,
     -1
 };
 
@@ -632,7 +633,8 @@ static const int lastclactions[] =               // actions for afk checking
     SV_CALLVOTE, SV_VOTE,
     SV_LISTDEMOS, SV_GETDEMO,
     SV_SWITCHNAME, SV_SWITCHSKIN, SV_SWITCHTEAM,
-    SV_GETVITA
+    SV_GETVITA,
+    SV_VOICEDATA, SV_VOICEOFF
 };
 
 int lastclactionslookup(int msg)

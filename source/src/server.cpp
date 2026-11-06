@@ -117,6 +117,15 @@ int shuffleskillthreshold = 200;
 int totalclients = 0;
 int cn2boot;
 
+// in-game voice chat: the server only relays raw PCM frames, one talker at a time
+#ifdef STANDALONE
+int sv_voice = 0, sv_voiceteam = 0;             // -R enables; no VARP in the standalone build
+#else
+VARP(sv_voice, 0, 0, 1);
+VARP(sv_voiceteam, 0, 0, 1);
+#endif
+int voiceowner = -1, voicelastsound = 0;
+
 // synchronising the worker threads...
 const char *endis[] = { "disabled", "enabled", "" };
 SERVPARLIST(dumpmaprot, 0, 1, 0, endis, "ddump maprot parameters for all maps (once, to logs/debug/maprot_debug_verbose.txt)");
@@ -451,6 +460,23 @@ void sendpacket(int n, int chan, ENetPacket *packet, int exclude, bool demopacke
 }
 
 static bool reliablemessages = false;
+
+// tell every voice-capable client who currently has the microphone
+static void sendvoicestate(int cn, int on)
+{
+    packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
+    putint(p, SV_VOICESTATE);
+    putint(p, cn);
+    putint(p, on);
+    ENetPacket *packet = p.finalize();
+    bool sent = false;
+    loopv(clients) if(clients[i]->type == ST_TCPIP && clients[i]->voicecapable)
+    {
+        sendpacket(i, 1, packet);
+        sent = true;
+    }
+    if(!sent) enet_packet_destroy(packet);
+}
 
 bool buildworldstate()
 {
@@ -2822,6 +2848,11 @@ void disconnect_client(int n, int reason)
     if(reason>=0) mlog(ACLOG_INFO, "[%s] disconnecting client %s (%s) cn %d, %d seconds played%s", c.hostname, c.name, disc_reason(reason), n, sp, scoresaved);
     else mlog(ACLOG_INFO, "[%s] disconnected client %s cn %d, %d seconds played%s", c.hostname, c.name, n, sp, scoresaved);
     totalclients--;
+    if(voiceowner == n)
+    {
+        voiceowner = -1;
+        sendvoicestate(n, 0);
+    }
     c.peer->data = (void *)-1;
     if(reason>=0) enet_peer_disconnect(c.peer, reason);
     clients[n]->zap();
@@ -3023,7 +3054,8 @@ int checktype(int type, client *cl)
                         SV_CALLVOTESUC, SV_CALLVOTEERR, SV_VOTERESULT,
                         SV_SETTEAM, SV_TEAMDENY, SV_SERVERMODE, SV_IPLIST,
                         SV_SENDDEMOLIST, SV_SENDDEMO, SV_DEMOPLAYBACK,
-                        SV_CLIENT, SV_DEMOCHECKSUM, SV_PAUSEMODE };
+                        SV_CLIENT, SV_DEMOCHECKSUM, SV_PAUSEMODE,
+                        SV_VOICESUPPORT, SV_VOICESTATE };
     // only allow edit messages in coop-edit mode
     static int edittypes[] = { SV_EDITENT, SV_EDITXY, SV_EDITARCH, SV_EDITBLOCK, SV_EDITD, SV_EDITE, SV_NEWMAP };
     if(cl)
@@ -3491,6 +3523,68 @@ void process(ENetPacket *packet, int sender, int chan)
                     if ( cl->spam > 4 ) { cl->mute = servmillis + 10000; break; } // 5 vcs in less than 20 seconds... shut up please
                     if ( type == SV_VOICECOM ) { QUEUE_MSG; }
                     else sendvoicecomteam(s, sender);
+                }
+            }
+            break;
+
+            case SV_VOICEDATA:
+            {
+                // relay only; the server never decodes audio.
+                // IMPORTANT: the whole payload must be consumed before any
+                // early exit, otherwise the rest of the packet is parsed as
+                // messages (and the client gets kicked for a bad tag).
+                int seq = getint(p);
+                int n = getint(p);
+                if(n < 0 || n > 160) { disconnect_client(sender, DISC_TAGT); return; }
+                int payload[160];
+                loopi(n) payload[i] = getint(p);
+
+                if(!valid_client(sender) || !cl->voicecapable || !sv_voice || n == 0) break;
+
+                // token bucket: 50 frames/s with a small burst allowance
+                if(!cl->voicelast)
+                {
+                    cl->voicelast = servmillis;
+                    cl->voicebudget = 20;
+                }
+                cl->voicebudget = min(cl->voicebudget + (servmillis - cl->voicelast), 80);
+                cl->voicelast = servmillis;
+                if(cl->voicebudget < 20) break;
+                cl->voicebudget -= 20;
+
+                if(voiceowner < 0)
+                {
+                    voiceowner = sender;
+                    voicelastsound = servmillis;
+                    sendvoicestate(sender, 1);
+                    mlog(ACLOG_INFO, "voice: %s has the microphone", cl->name);
+                }
+                if(voiceowner != sender) break; // someone else has the microphone
+                voicelastsound = servmillis;
+                packetbuf out(MAXTRANS);
+                putint(out, SV_VOICEDATA);
+                putint(out, sender);
+                putint(out, seq);
+                putint(out, n);
+                loopi(n) putint(out, payload[i]);
+                ENetPacket *packet = out.finalize();
+                bool sent = false;
+                loopv(clients) if(clients[i]->type == ST_TCPIP && clients[i]->voicecapable && i != sender
+                    && (!sv_voiceteam || !m_teammode || clients[i]->team == cl->team))
+                {
+                    sendpacket(i, 1, packet);
+                    sent = true;
+                }
+                if(!sent) enet_packet_destroy(packet); // no listeners: don't leak the packet
+            }
+            break;
+
+            case SV_VOICEOFF:
+            {
+                if(valid_client(sender) && voiceowner == sender)
+                {
+                    voiceowner = -1;
+                    sendvoicestate(sender, 0);
                 }
             }
             break;
@@ -4304,6 +4398,17 @@ void process(ENetPacket *packet, int sender, int chan)
                 }
                 // else if()
 
+                // in-game voice: a patched client announces itself so the server
+                // never sends voice messages to stock clients
+                else if(!strcmp(ext, "acvoice::hello"))
+                {
+                    if(valid_client(sender))
+                    {
+                        clients[sender]->voicecapable = true;
+                        sendf(sender, 1, "rrii", SV_VOICESUPPORT, sv_voice ? 1 : 0);
+                    }
+                }
+
                 // add other extensions here
 
                 else for(; n > 0; n--) getint(p); // ignore unknown extensions
@@ -4538,6 +4643,14 @@ void serverslice(uint timeout)   // main server update, called from cube main lo
     if(!sg->sispaused) sg->gamemillis += diff;
     servmillis = nextmillis;
     entropy_add_byte(diff);
+
+    // release the voice channel if the talker vanished (crash, packet loss, alt-tab)
+    if(voiceowner >= 0 && servmillis - voicelastsound > 500)
+    {
+        int o = voiceowner;
+        voiceowner = -1;
+        sendvoicestate(o, 0);
+    }
 
 #ifndef STANDALONE
     if(m_demo)
@@ -4925,6 +5038,9 @@ void initserver(bool dedicated)
         if(!logcheck(ACLOG_ERROR)) printf("WARNING: logging not started!\n");
     }
     mlog(ACLOG_INFO, "logging local AssaultCube server (version %d, protocol %d/%d) now..", AC_VERSION, SERVER_PROTOCOL_VERSION, EXT_VERSION);
+
+    if(scl.voice) sv_voice = 1;
+    mlog(ACLOG_INFO, "in-game voice chat is %s", sv_voice ? "enabled (one talker at a time)" : "disabled (start with -R to enable)");
 
     copystring(sg->servdesc_current, scl.servdesc_full);
     servermsinit(dedicated);

@@ -7,6 +7,7 @@ void cleanup(char *msg)         // single program exit point;
     if(clientlogfile) clientlogfile->fflush();
     if(!msg)
     {
+        voicecleanup();
         cleanupclient();
         audiomgr.soundcleanup();
         cleanupserver();
@@ -1560,7 +1561,7 @@ int main(int argc, char **argv)
 
         checkinput();
 
-        if(lastmillis) updateworld(curtime, lastmillis);
+        if(lastmillis) { voiceupdate(); updateworld(curtime, lastmillis); }
 
         if(needsautoscreenshot) showscores(true);
 

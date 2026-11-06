@@ -102,6 +102,7 @@ CLIENT_OBJS= \
 	stream.o \
 	texture.o \
 	tools.o \
+	voice.o \
 	water.o \
 	weapon.o \
 	wizard.o \

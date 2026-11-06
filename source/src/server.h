@@ -248,10 +248,12 @@ struct client                   // server side version of "dynent" type
     int role;
     int connectmillis, ldt, spj;
     int mute, spam, lastvc; // server side voice comm spam control
+    int voicelast, voicebudget; // voice chat token bucket (frames per 20 ms)
     int acversion, acbuildtype;
     bool isauthed; // for passworded servers
     bool needsauth;
     bool haswelcome;
+    bool voicecapable; // client announced it understands voice chat messages
     bool isonrightmap, loggedwrongmap, freshgame;
     bool timesync;
     bool ispaused;
@@ -334,6 +336,8 @@ struct client                   // server side version of "dynent" type
         mapchange();
         freshgame = false;         // don't spawn into running games
         mute = spam = lastvc = badspeech = badmillis = nvotes = 0;
+        voicelast = voicebudget = 0;
+        voicecapable = false;
         ispaused = 0;
     }
 
@@ -442,7 +446,9 @@ const char *messagenames[SV_NUM] =
     "SV_CLIENT",
     "SV_EXTENSION",
     "SV_MAPIDENT", "SV_DEMOCHECKSUM", "SV_DEMOSIGNATURE",
-    "SV_PAUSEMODE"
+    "SV_PAUSEMODE",
+    "SV_GETVITA", "SV_VITADATA",
+    "SV_VOICEDATA", "SV_VOICEOFF", "SV_VOICESUPPORT", "SV_VOICESTATE"
 };
 
 const char *entnames[] =

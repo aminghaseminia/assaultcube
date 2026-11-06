@@ -12,6 +12,12 @@ On the correct settings, it can even run on old hardware (Pentium III and above)
 
 ![screenshot](https://user-images.githubusercontent.com/7680684/69888836-9a931d80-12b3-11ea-8123-bbf06908a96f.jpg)
 
+## Additions in this fork
+
+ * **Hijabi player skins** for both teams (see `packages/models/playermodels/`).
+ * **In-game push-to-talk voice chat** — off by default, enabled with `-R` on
+   the server and F9 in the client. See [VOICECHAT.md](VOICECHAT.md).
+
 ## Features in a nutshell:
 
  * It's **FREE**.

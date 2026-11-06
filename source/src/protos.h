@@ -790,6 +790,13 @@ extern void gl_drawhud(int w, int h, int curfps, int nquads, int curvert, bool u
 extern void loadingscreen(const char *fmt = NULL, ...) PRINTFARGS(1, 2);
 extern void hudoutf(const char *s, ...) PRINTFARGS(1, 2);
 extern void hudonlyf(const char *s, ...) PRINTFARGS(1, 2);
+
+// voice chat (client side)
+extern void voiceupdate();
+extern void voicereceive(int cn, int seq, int n, ucharbuf &p);
+extern void voicesupport(int supported);
+extern void voicestate(int cn, int on);
+extern void voicecleanup();
 extern void hudeditf(int type, const char *s, ...) PRINTFARGS(2, 3);
 extern void show_out_of_renderloop_progress(float bar1, const char *text1, float bar2 = 0, const char *text2 = NULL);
 extern void updatedmgindicator(playerent *p, vec &attack);
@@ -1169,6 +1176,7 @@ struct servercommandline
     int uprate, serverport, syslogfacility, filethres, syslogthres, maxdemos, maxclients, kickthreshold, banthreshold, verbose, incoming_limit, afk_limit, ban_time;
     const char *ip, *master, *logident, *serverpassword, *adminpasswd, *demopath, *maprotfile, *pwdfile, *blfile, *geoipfile, *nbfile, *infopath, *motdpath, *forbidden, *service, *logfilepath, *parfilepath, *ssk, *vitabasename;
     bool logtimestamp, demo_interm, loggamestatus;
+    bool voice;                     // -V: enable in-game voice chat
     string motd, servdesc_full, servdesc_pre, servdesc_suf, voteperm, mapperm;
     int clfilenesting;
     vector<const char *> adminonlymaps; // FIXME: remove this
@@ -1179,7 +1187,7 @@ struct servercommandline
                             maprotfile("config/maprot.cfg"), pwdfile("config/serverpwd.cfg"), blfile("config/serverblacklist.cfg"), geoipfile("config/geoip.cfg"), nbfile("config/nicknameblacklist.cfg"),
                             infopath("config/serverinfo"), motdpath("config/motd"), forbidden("config/forbidden.cfg"), service(NULL), logfilepath("logs/"), parfilepath("config/serverparameters.cfg"), ssk(NULL), vitabasename("config/servervita"),
                             logtimestamp(false), demo_interm(false), loggamestatus(true),
-                            clfilenesting(0)
+                            voice(false), clfilenesting(0)
     {
         motd[0] = servdesc_full[0] = servdesc_pre[0] = servdesc_suf[0] = voteperm[0] = mapperm[0] = '\0';
     }
@@ -1193,6 +1201,9 @@ struct servercommandline
         // client: dtwhzbsave
         switch(arg[1])
         { // todo: gjlqEJQU
+            case 'R': // enable in-game voice chat (-R). off by default
+                voice = a[0] ? atoi(a) != 0 : true;
+            break;
             case 'Y': // private server key
             {
                 bool allas = true; // a is all A's?
