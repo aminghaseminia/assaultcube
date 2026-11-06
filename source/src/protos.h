@@ -796,6 +796,7 @@ extern void voiceupdate();
 extern void voicereceive(int cn, int seq, int n, ucharbuf &p);
 extern void voicesupport(int supported);
 extern void voicestate(int cn, int on);
+extern void voicehudrender();
 extern void voicecleanup();
 extern void hudeditf(int type, const char *s, ...) PRINTFARGS(2, 3);
 extern void show_out_of_renderloop_progress(float bar1, const char *text1, float bar2 = 0, const char *text2 = NULL);

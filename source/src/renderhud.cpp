@@ -1109,6 +1109,7 @@ void gl_drawhud(int w, int h, int curfps, int nquads, int curvert, bool underwat
     }
 
     if(!hidehudmsgs) hudmsgs.render();
+    voicehudrender();
 
     glLoadIdentity();
     glOrtho(0, VIRTW, VIRTH, 0, -1, 1);

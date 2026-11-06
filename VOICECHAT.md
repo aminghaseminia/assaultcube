@@ -29,6 +29,15 @@ Without `-R` the server stays silent and clients are told
 Since it is push-to-talk, leaving it enabled cannot create a hot microphone.
 If you press X while voice chat is off, the game reminds you to press F9.
 
+## On-screen indicator
+
+While transmitting, a small panel under the radar shows:
+
+- `MIC transmitting` plus a green/yellow/red VU meter for your own microphone.
+- The names of every remote player whose voice is currently being received.
+
+The panel disappears when a menu (including the scoreboard) is open.
+
 ## Several people talking at once
 
 Every player who holds X is transmitted. Each client receives one stream per

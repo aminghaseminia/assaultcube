@@ -29,6 +29,8 @@ static bool audiostarted = false, micfailed = false, outfailed = false;
 static int lastouttry = -10000;
 
 static bool talking = false, pttheld = false;
+static bool testtalking = false;
+static int locallevel = 0; // 0..100, drives the local VU meter
 static int voicesupported = -1;    // -1 unknown, 0 server says no, 1 ready
 static int lastprobe = -10000, probes = 0;
 static ENetPeer *lastpeer = NULL;
@@ -225,6 +227,7 @@ static void voice_send_frame(const uchar *data, int len)
     short samples[VOICE_FRAME_SAMPLES];
     memcpy(samples, data, VOICE_FRAME_BYTES);
     int gain = voiceinputgain;
+    int peak = 0;
 
     packetbuf p(MAXTRANS);
     putint(p, SV_VOICEDATA);
@@ -234,9 +237,16 @@ static void voice_send_frame(const uchar *data, int len)
     {
         int s0 = clamp(samples[i * 2] * gain / 100, -32768, 32767);
         int s1 = clamp(samples[i * 2 + 1] * gain / 100, -32768, 32767);
+        int a0 = s0 < 0 ? -s0 : s0;
+        int a1 = s1 < 0 ? -s1 : s1;
+        if(a0 > peak) peak = a0;
+        if(a1 > peak) peak = a1;
         unsigned int word = ((unsigned int)(s0 & 0xFFFF)) | (((unsigned int)(s1 & 0xFFFF)) << 16);
         putint(p, (int)word);
     }
+    int target = peak * 100 / 32768;
+    if(target > locallevel) locallevel = target;             // fast attack
+    else locallevel = (locallevel * 3 + target) / 4;          // slow decay
     sendpackettoserv(1, p.finalize());
 }
 
@@ -260,9 +270,9 @@ void voicesupport(int supported)
 
 void voicestate(int cn, int on)
 {
-    if(!voicechat || !on || !player1 || cn == player1->clientnum) return;
+    if(!on || !player1 || cn == player1->clientnum) return;
     playerent *d = getclient(cn);
-    if(d && !(d->muted || d->ignored)) hudoutf("\f2%s\fr is talking", colorname(d));
+    if(d && !(d->muted || d->ignored)) clientlogf("voice: %s is talking", d->name);
 }
 
 void voicereceive(int cn, int seq, int n, ucharbuf &p)
@@ -416,6 +426,7 @@ void voicetest(int *millis)
     }
     testframes = max(1, *millis / 20);
     testlast = totalmillis - 20;
+    testtalking = true;
     conoutf("voice: scheduled %d test frames", testframes);
 }
 COMMAND(voicetest, "i");
@@ -465,6 +476,8 @@ void voiceupdate()
         testframes--;
         voice_send_frame((uchar *)tone, VOICE_FRAME_BYTES);
     }
+    if(testframes <= 0) testtalking = false;
+    if(!talking && !testtalking) locallevel = (locallevel * 7) / 8;
 
     // mix whatever remote speakers have queued; this runs even when we are not
     // transmitting ourselves
@@ -506,6 +519,121 @@ void voiceupdate()
         voice_send_frame(framebuf, n);
         frames++;
     }
+}
+
+void voicehudrender()
+{
+    if(!voicechat || !curpeer || !player1 || menuvisible()) return;
+
+    bool local = talking || testtalking;
+    int cns[8], n = 0;
+    loopi(MAXPLAYERS) if(i != player1->clientnum && streams[i].active)
+    {
+        playerent *d = getclient(i);
+        if(!d || d->muted || d->ignored) continue;
+        if(n < (int)(sizeof(cns) / sizeof(cns[0]))) cns[n++] = i;
+    }
+    if(!local && !n) return;
+
+    const int y = 820, pad = 16, lineh = FONTH + 8;
+    const int shown = min(n, 6);
+
+    int textw = text_width("\f2MIC\fr  transmitting");
+    for(int i = 0; i < shown; i++)
+    {
+        playerent *d = getclient(cns[i]);
+        if(d) textw = max(textw, text_width(colorname(d)));
+    }
+    int w = max(520, textw + pad * 2);
+    int x = VIRTW * 2 - w - 30;
+    if(x < 24) x = 24;
+
+    int h = pad * 2;
+    if(local) h += lineh + 42;
+    h += (shown + (n > shown ? 1 : 0)) * lineh;
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0, VIRTW * 2, VIRTH * 2, 0, -1, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // opaque panel with a green accent strip; blend is turned off so the
+    // background is visible regardless of the font's additive blend mode
+    glDisable(GL_BLEND);
+    glDisable(GL_TEXTURE_2D);
+    glColor4ub(8, 12, 10, 255);
+    glBegin(GL_QUADS);
+    glVertex2f(x, y);
+    glVertex2f(x + w, y);
+    glVertex2f(x + w, y + h);
+    glVertex2f(x, y + h);
+    glEnd();
+    glColor4ub(60, 200, 100, 255);
+    glBegin(GL_QUADS);
+    glVertex2f(x, y);
+    glVertex2f(x + 10, y);
+    glVertex2f(x + 10, y + h);
+    glVertex2f(x, y + h);
+    glEnd();
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    int ty = y + pad;
+    if(local)
+    {
+        draw_text("\f2MIC\fr  transmitting", x + pad, ty);
+        ty += lineh;
+
+        // VU meter: green -> yellow -> red
+        const int segs = 14, segw = 20, segpitch = 25, segh = 28;
+        int bx = x + pad, by = ty;
+        glDisable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        for(int i = 0; i < segs; i++)
+        {
+            int threshold = (i + 1) * 100 / segs;
+            int r = 45, g = 45, b = 45, a = 255;
+            if(locallevel >= threshold)
+            {
+                if(i < segs * 6 / 10) { r = 50; g = 220; b = 90; }
+                else if(i < segs * 85 / 100) { r = 240; g = 200; b = 40; }
+                else { r = 240; g = 60; b = 40; }
+            }
+            glColor4ub(r, g, b, a);
+            glBegin(GL_QUADS);
+            glVertex2f(bx + i * segpitch, by);
+            glVertex2f(bx + i * segpitch + segw, by);
+            glVertex2f(bx + i * segpitch + segw, by + segh);
+            glVertex2f(bx + i * segpitch, by + segh);
+            glEnd();
+        }
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        ty += segh + 12;
+    }
+
+    for(int i = 0; i < shown; i++)
+    {
+        playerent *d = getclient(cns[i]);
+        if(d) draw_text(colorname(d), x + pad, ty);
+        ty += lineh;
+    }
+    if(n > shown)
+    {
+        draw_textf("\f7+%d more", x + pad, ty, n - shown);
+        ty += lineh;
+    }
+
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
 }
 
 void voicecleanup()
