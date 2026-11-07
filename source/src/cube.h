@@ -68,10 +68,10 @@ extern float waterlevel;
 //#define PRODUCTION
 
 #ifdef PRODUCTION
-	#define DS_VERSION 1302
+	#define DS_VERSION 1303
 	#define DS_MASTER_PORT 28760
 #else
-	#define DS_VERSION -(1302)
+	#define DS_VERSION -(1303)
 	#define DS_MASTER_PORT 28758
 #endif
 

@@ -19,8 +19,8 @@ Everything below exists to make that flow safe. Do not break it.
 
 - Build dependencies (sudo apt): `clang g++ libsdl2-dev libsdl2-image-dev libopenal-dev libvorbis-dev zlib1g-dev libx11-dev`.
 - Always build with `PRODUCTION` defined (`build-linux.sh` passes `-DPRODUCTION`).
-  - Production: `DS_VERSION 1302`, master port `28760`.
-  - Plain `make` (no flag): `DS_VERSION -1302`, master port `28758` — a dev/test build, wrong for releases.
+  - Production: `DS_VERSION 1303`, master port `28760`.
+  - Plain `make` (no flag): `DS_VERSION -1303`, master port `28758` — a dev/test build, wrong for releases.
 - `bin_unix/` is git-ignored (binaries never committed). The launcher uses `bin_unix/dunestrike_client` / `dunestrike_server`.
 - `build-linux.sh` is the canonical rebuild command (configures+builds bundled enet on first run, then `make client server install`). Keep it working.
 
@@ -66,5 +66,5 @@ Everything below exists to make that flow safe. Do not break it.
 
 Dune Strike is an altered distribution built on the Cube engine and the
 AssaultCube codebase. See `CREDITS.md` for the required origin and license
-notices. `DS_VERSION 1302` corresponds to game version 1.3.0.2. `cube.h` keeps
+notices. `DS_VERSION 1303` corresponds to game version 1.3.0.3. `cube.h` keeps
 `//#define PRODUCTION` commented; enable it per-build as described above.
