@@ -15,8 +15,8 @@ On the correct settings, it can even run on old hardware (Pentium III and above)
 ## Additions in this fork
 
  * **Hijabi player skins** for both teams (see `packages/models/playermodels/`).
- * **In-game push-to-talk voice chat** — on by default in the client; the server needs `-R`
-   the server and F9 in the client. See [VOICECHAT.md](VOICECHAT.md).
+ * **In-game push-to-talk voice chat** — on by default in the client and in
+   `server.sh`; F9 toggles it in the client. See [VOICECHAT.md](VOICECHAT.md).
 
 ## Features in a nutshell:
 

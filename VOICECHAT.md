@@ -1,21 +1,23 @@
 # In-game voice chat
 
 Push-to-talk voice chat for multiplayer games. On the client it is **on by
-default**; the server must be started with `-R`. Any number of players can hold
-X at the same time and everyone hears all of them.
+default**; the server script enables it too, so `./server.sh` is enough. Any
+number of players can hold X at the same time and everyone hears all of them.
 
 ## Quick start
 
-**Server** — start it with `-R`:
+**Server** — `server.sh` passes `-R` for you:
 
 ```sh
-./server.sh -R -n"AssaultCube LAN" -c10
+./server.sh
 ```
+
+If you run the server binary yourself, pass `-R` to it.
 
 AssaultCube command-line flags must be attached to their values: `-c10`, not
 `-c 10`; `-n"Name"`, not `-n "Name"`.
 
-Without `-R` the server stays silent and clients are told
+Without `-R` (or with `-R0`) the server stays silent and clients are told
 `Voice chat: the server has it disabled`.
 
 **Client**
@@ -57,7 +59,7 @@ Practical consequences:
 | `voicechat` | `1` | Master switch. F9 toggles it and it is saved. |
 | `voicevolume` | `100` | Playback volume, 0–200 %. |
 | `voiceinputgain` | `100` | Microphone gain, 0–300 %. |
-| `sv_voice` | `0` | Server switch. Standalone servers use `-R`. |
+| `sv_voice` | `1` | Server switch, set by `server.sh` (`-R`). Disable with `-R0`. |
 | `sv_voiceteam` | `0` | `1` = only teammates hear each other (listen-server builds). |
 
 Change the keys in `config/autoexec.cfg`:
