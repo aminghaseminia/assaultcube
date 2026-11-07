@@ -93,6 +93,8 @@ jobs:
 
       - name: Build client + server
         run: |
+          # POST-WORKFLOW-FIX: -rdynamic is Linux-only; force added via Makefile override
+          sed -i 's/ -rdynamic//' source/src/Makefile
           cd source/enet
           ./configure --host=i686-w64-mingw32 --enable-shared=no --enable-static=yes
           make -j4
@@ -127,13 +129,18 @@ jobs:
 
   # ---------------------------------------------------------------- macOS ---
   build-macos:
-    runs-on: macos-14
+    runs-on: macos-latest
     name: macOS arm64 (Apple Silicon)
     steps:
       - uses: actions/checkout@v4
 
       - name: Enable production build
-        run: sed -i '' -e 's@//#define PRODUCTION@#define PRODUCTION@' source/src/cube.h
+        run: |
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            sed -i '' -e 's@//#define PRODUCTION@#define PRODUCTION@' source/src/cube.h
+          else
+            sed -i 's@//#define PRODUCTION@#define PRODUCTION@' source/src/cube.h
+          fi
 
       - name: Install dependencies
         run: |
