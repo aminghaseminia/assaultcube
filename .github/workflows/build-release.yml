@@ -48,8 +48,9 @@ jobs:
           elif [ "${{ github.ref_type }}" = "tag" ]; then
             VER="${GITHUB_REF_NAME#v}"
           else
-            N=$(grep -m1 '^#define DS_VERSION' source/src/cube.h | awk '{print $3}' | tr -d '-')
+            N=$(grep -m1 '^[[:space:]]*#define DS_VERSION' source/src/cube.h | awk '{print $3}' | tr -d '-')
             VER="${N:0:1}.${N:1:1}.${N:2:1}.${N:3:1}"
+            test -n "$VER" || { echo "could not read DS_VERSION from cube.h"; exit 1; }
           fi
           echo "version=$VER" >> "$GITHUB_OUTPUT"
           echo "tag=v$VER" >> "$GITHUB_OUTPUT"
