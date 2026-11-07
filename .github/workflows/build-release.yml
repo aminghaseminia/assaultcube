@@ -1,0 +1,217 @@
+name: build & release (AssaultCube)
+
+# Builds AssaultCube for Linux (native), Windows 32-bit (mingw cross-compile,
+# compatible with bin_win32 DLLs) and macOS (arm64), then attaches the three
+# game archives to a GitHub release.
+#
+# Trigger:
+#  - pushing a tag like  v1.3.0.2  → release "v1.3.0.2" (published)
+#  - manual run                  → draft release for the typed version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Game version (e.g. 1.3.0.2) — a v<version> tag will be created'
+        required: true
+        default: '1.3.0.2'
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+env:
+  # Output archive names are assembled as AssaultCube_v<ver>_<plat>.<ext>
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: false
+
+jobs:
+  # ---------------------------------------------------------------- Linux ---
+  build-linux:
+    runs-on: ubuntu-22.04
+    name: Linux x64
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable production build
+        run: sed -i 's@//#define PRODUCTION@#define PRODUCTION@' source/src/cube.h
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang g++ make libsdl2-dev libsdl2-image-dev libopenal-dev \
+            libvorbis-dev libx11-dev zlib1g-dev
+
+      - name: Build client + server
+        run: |
+          cd source/enet
+          ./configure --enable-shared=no --enable-static=yes
+          make -j4
+          cd ../src
+          make -j4 client server
+          file ac_client ac_server
+          install -d ../../bin_unix
+          install -m755 ac_client ../../bin_unix/native_client
+          install -m755 ac_server ../../bin_unix/native_server
+
+      - name: Package game archive (tar.gz)
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then VER="${{ github.event.inputs.version }}"; else VER="${GITHUB_REF_NAME#v}"; fi
+          TAR="AssaultCube_v${VER}_Linux.tar.gz"
+          git archive --format=tar.gz -o "$TAR" HEAD
+          # re-pack adding the built binaries (bin_unix is git-ignored)
+          cd /tmp && rm -rf acpack && mkdir acpack && cd acpack
+          tar xzf "$GITHUB_WORKSPACE/$TAR"
+          cp -R "$GITHUB_WORKSPACE/bin_unix" ./bin_unix
+          tar czf "$GITHUB_WORKSPACE/$TAR" .
+          echo "TAR=$TAR" >> "$GITHUB_ENV"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-archive
+          path: AssaultCube_v*_Linux.tar.gz
+          if-no-files-found: error
+
+  # -------------------------------------------------------------- Windows ---
+  build-windows:
+    runs-on: ubuntu-22.04
+    name: Windows 32-bit (mingw cross)
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable production build
+        run: sed -i 's@//#define PRODUCTION@#define PRODUCTION@' source/src/cube.h
+
+      - name: Install mingw cross toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            make g++-mingw-w64-i686-posix mingw-w64-tools
+
+      - name: Build client + server
+        run: |
+          cd source/enet
+          ./configure --host=i686-w64-mingw32 --enable-shared=no --enable-static=yes
+          make -j4
+          cd ../src
+          make -j4 client server \
+            PLATFORM=MINGW \
+            CXX=i686-w64-mingw32-g++ \
+            WINDRES=i686-w64-mingw32-windres \
+            'CXXFLAGS=-O3 -fomit-frame-pointer -Wall -fsigned-char' \
+            'CLIENT_LIBS=-mwindows -L../enet/.libs -lenet -L../lib -lSDL2 -lSDL2_image -lzdll -lopengl32 -lOpenAL32 -llibvorbisfile -lws2_32 -lwinmm' \
+            'SERVER_LIBS=-L../enet/.libs -lenet -L../lib -lzdll -lws2_32 -lwinmm'
+          file ../../bin_win32/ac_client.exe ../../bin_win32/ac_server.exe
+
+      - name: Package game archive (zip)
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then VER="${{ github.event.inputs.version }}"; else VER="${GITHUB_REF_NAME#v}"; fi
+          ZIP="AssaultCube_v${VER}_Windows.zip"
+          git archive --format=zip -o "$ZIP" HEAD
+          cd /tmp && rm -rf acpack && mkdir acpack && cd acpack
+          unzip -q "$GITHUB_WORKSPACE/$ZIP"
+          cp "$GITHUB_WORKSPACE/bin_win32/ac_client.exe" ./bin_win32/
+          cp "$GITHUB_WORKSPACE/bin_win32/ac_server.exe" ./bin_win32/
+          zip -qr "$GITHUB_WORKSPACE/$ZIP" .
+          echo "ZIP=$ZIP" >> "$GITHUB_ENV"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-archive
+          path: AssaultCube_v*_Windows.zip
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------- macOS ---
+  build-macos:
+    runs-on: macos-14
+    name: macOS arm64 (Apple Silicon)
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable production build
+        run: sed -i '' -e 's@//#define PRODUCTION@#define PRODUCTION@' source/src/cube.h
+
+      - name: Install dependencies
+        run: |
+          brew install sdl2 sdl2_image libvorbis automake autoconf libtool pkg-config
+
+      - name: Build client + server
+        run: |
+          cd source/enet
+          ./configure --enable-shared=no --enable-static=yes
+          make -j4
+          cd ../src
+          make -j4 client server \
+            CXX=clang++ \
+            'CLIENT_LIBS=-L../enet/.libs -lenet -lSDL2_image -lvorbisfile -lz -framework OpenGL -framework OpenAL -framework AudioToolbox' \
+            'SERVER_INCLUDES=-DSTANDALONE -I. -Ibot -I../enet/include' \
+            'SERVER_LIBS=-L../enet/.libs -lenet -lz'
+          file ac_client ac_server
+          install -d ../../bin_unix
+          install -m755 ac_client ../../bin_unix/native_client
+          install -m755 ac_server ../../bin_unix/native_server
+
+      - name: Package game archive (zip)
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then VER="${{ github.event.inputs.version }}"; else VER="${GITHUB_REF_NAME#v}"; fi
+          ZIP="AssaultCube_v${VER}_macOS.zip"
+          git archive --format=zip -o "$ZIP" HEAD
+          mkdir -p /tmp/acpack && rm -rf /tmp/acpack/* && cd /tmp/acpack
+          unzip -q "$GITHUB_WORKSPACE/$ZIP"
+          cp -R "$GITHUB_WORKSPACE/bin_unix" ./bin_unix
+          zip -qr "$GITHUB_WORKSPACE/$ZIP" .
+          echo "ZIP=$ZIP" >> "$GITHUB_ENV"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-archive
+          path: AssaultCube_v*_macOS.zip
+          if-no-files-found: error
+
+  # -------------------------------------------------------------- Release ---
+  release:
+    needs: [build-linux, build-windows, build-macos]
+    runs-on: ubuntu-22.04
+    name: Publish release
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          pattern: '*-archive'
+          path: dist
+
+      - name: Create/upload release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            VER="${{ github.event.inputs.version }}"
+          else
+            VER="${GITHUB_REF_NAME#v}"
+          fi
+          TAG="v${VER}"
+          # workflow_dispatch: create the tag now, pointing at this commit
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git tag "$TAG" "$GITHUB_SHA"
+            git push origin "$TAG"
+            gh release create "$TAG" \
+              --title "AssaultCube $TAG" \
+              --verify-tag \
+              --generate-notes
+          elif ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" \
+              --title "AssaultCube $TAG" \
+              --verify-tag \
+              --generate-notes
+          fi
+          gh release upload "$TAG" dist/* --clobber
