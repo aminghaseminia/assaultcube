@@ -207,17 +207,16 @@ jobs:
             VER="${GITHUB_REF_NAME#v}"
           fi
           TAG="v${VER}"
-          # workflow_dispatch: create the tag now, pointing at this commit
+          # workflow_dispatch: make sure the tag exists at the selected commit
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git tag "$TAG" "$GITHUB_SHA"
-            git push origin "$TAG"
-            gh release create "$TAG" \
-              --title "AssaultCube $TAG" \
-              --verify-tag \
-              --generate-notes
-          elif ! gh release view "$TAG" >/dev/null 2>&1; then
+            if ! git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+              git config user.name "github-actions[bot]"
+              git config user.email "github-actions[bot]@users.noreply.github.com"
+              git tag "$TAG" "$GITHUB_SHA"
+              git push origin "$TAG"
+            fi
+          fi
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
             gh release create "$TAG" \
               --title "AssaultCube $TAG" \
               --verify-tag \
