@@ -104,9 +104,9 @@ jobs:
             PLATFORM=MINGW \
             CXX=i686-w64-mingw32-g++ \
             WINDRES=i686-w64-mingw32-windres \
-            'CXXFLAGS=-O3 -fomit-frame-pointer -Wall -fsigned-char -static-libgcc -static-libstdc++' \
-            'CLIENT_LIBS=-mwindows -L../enet/.libs -lenet -L../lib -lSDL2main -lSDL2 -lSDL2_image -lvorbisfile -lzdll -lopengl32 -lOpenAL32 -lws2_32 -lwinmm' \
-            'SERVER_LIBS=-L../enet/.libs -lenet -L../lib -lzdll -lSDL2 -lws2_32 -lwinmm'
+            'CXXFLAGS=-O3 -fomit-frame-pointer -Wall -fsigned-char' \
+            'CLIENT_LIBS=-mwindows -L../enet/.libs -lenet -L../lib -lSDL2main -lSDL2 -lSDL2_image -lvorbisfile -lzdll -lopengl32 -lOpenAL32 -lws2_32 -lwinmm -static-libgcc -static-libstdc++' \
+            'SERVER_LIBS=-L../enet/.libs -lenet -L../lib -lzdll -lSDL2 -lws2_32 -lwinmm -static-libgcc -static-libstdc++'
           file ../../bin_win32/ac_client.exe ../../bin_win32/ac_server.exe
 
       - name: Package game archive (zip)
