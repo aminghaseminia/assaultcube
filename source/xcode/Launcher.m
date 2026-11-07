@@ -19,8 +19,8 @@
 #define kMaxDisplays	16
 
 //If you make a MOD then please change this, the bundle indentifier, the file extensions (.cgz, .dmo), and the url registration.
-#define kASSAULTCUBE @"assaultcube"
-#define kUSERCONFGIDIR @"assaultcube/v1.3"
+#define kDUNESTRIKE @"dunestrike"
+#define kUSERCONFGIDIR @"dunestrike/v1.3"
 
 //tab names, i.e. image names (text is localised)
 #define tkMAIN @"Main"
@@ -33,7 +33,7 @@
 - (NSString*)expand {
     NSMutableString *str = [NSMutableString string];
     [str setString:self];
-    [str replaceOccurrencesOfString:@":s" withString:kASSAULTCUBE options:0 range:NSMakeRange(0, [str length])]; 
+    [str replaceOccurrencesOfString:@":s" withString:kDUNESTRIKE options:0 range:NSMakeRange(0, [str length])]; 
     return str;
 }
 @end
@@ -171,7 +171,7 @@ static int numberForKey(CFDictionaryRef desc, CFStringRef key)
         [toolBarItems setObject:item forKey:identifier];
         [item release];
     }
-    NSToolbar *toolbar = [[NSToolbar alloc] initWithIdentifier:@"assaultcube_toolbar1"];
+    NSToolbar *toolbar = [[NSToolbar alloc] initWithIdentifier:@"dunestrike_toolbar1"];
     [toolbar setDelegate:self]; 
     [toolbar setAllowsUserCustomization:NO]; 
     [toolbar setAutosavesConfiguration:NO];  
@@ -234,7 +234,7 @@ static int numberForKey(CFDictionaryRef desc, CFStringRef key)
 }
 
 
-/* directory where user files are kept - typically /Users/<name>/Application Support/assaultcube_major.minor */
+/* directory where user files are kept - typically /Users/<name>/Application Support/dunestrike_major.minor */
 + (NSString*)userdir 
 {
     FSRef folder;
@@ -401,7 +401,7 @@ static int numberForKey(CFDictionaryRef desc, CFStringRef key)
     {
         if([filename hasPrefix:@"-e"])
             [cmds addObject:[filename substringFromIndex:2]];
-        if([filename hasPrefix:[NSString stringWithFormat:@"%@://", kASSAULTCUBE]])
+        if([filename hasPrefix:[NSString stringWithFormat:@"%@://", kDUNESTRIKE]])
             [args addObject:filename];
         else
         {
@@ -556,7 +556,7 @@ static int numberForKey(CFDictionaryRef desc, CFStringRef key)
     [self openUserdir:nil]; 
 }
 
-//we register 'assaultcube' as a url scheme
+//we register 'dunestrike' as a url scheme
 - (void)getUrl:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
 {
     NSURL *url = [NSURL URLWithString:[[event paramDescriptorForKeyword:keyDirectObject] stringValue]];

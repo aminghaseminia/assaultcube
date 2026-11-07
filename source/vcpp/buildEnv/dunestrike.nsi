@@ -55,19 +55,19 @@ SetCompressor /SOLID lzma
 !define CURPATH ".\" ; must include the installer graphics and the AC_NEWVERSIONDIR directory
 !define AC_FULLVERSIONINT "1.3.0.0"
 !define AC_FULLVERSION "v${AC_FULLVERSIONINT}"
-!define AC_SHORTNAME "AssaultCube ${AC_FULLVERSIONINT}"
-!define AC_FULLNAME "AssaultCube ${AC_FULLVERSIONINT}"
-!define AC_URLPROTOCOL "assaultcube"
+!define AC_SHORTNAME "Dune Strike ${AC_FULLVERSIONINT}"
+!define AC_FULLNAME "Dune Strike ${AC_FULLVERSIONINT}"
+!define AC_URLPROTOCOL "dunestrike"
 !define AC_MAJORVERSIONINT 1
 !define AC_MINORVERSIONINT 3
 !define AC_NEWVERSIONDIR "AC" ; directory with prepared new AC version
-; path to profile folder in "MYDOCUMENTS" directory, should be the same as in assaultcube.bat
-!define AC_PROFILEPATH "My Games\AssaultCube\v${AC_MAJORVERSIONINT}.${AC_MINORVERSIONINT}"
+; path to profile folder in "MYDOCUMENTS" directory, should be the same as in dunestrike.bat
+!define AC_PROFILEPATH "My Games\Dune Strike\v${AC_MAJORVERSIONINT}.${AC_MINORVERSIONINT}"
 
 Name "${AC_SHORTNAME}"
 VAR StartMenuFolder
 !define AC_STARTMENUFOLDER "$SMPROGRAMS\$StartMenuFolder"
-OutFile "AssaultCube_v1.3.0.0_LockdownEdition.exe"
+OutFile "DuneStrike_v1.3.0.0_LockdownEdition.exe"
 InstallDir "$PROGRAMFILES\${AC_SHORTNAME}"
 InstallDirRegKey HKLM "Software\${AC_SHORTNAME}" ""
 !define ARP "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AC_SHORTNAME}"
@@ -84,11 +84,11 @@ Var Minute
 Var Second
 
 Function LeaveDirectory
-  IfFileExists $INSTDIR\assaultcube.bat 0 true
+  IfFileExists $INSTDIR\dunestrike.bat 0 true
     MessageBox MB_YESNO|MB_ICONQUESTION \
     "The folder $INSTDIR already exists. \
-    $\nThe previous AssaultCube version in this folder will be uninstalled if you install the new version here. \
-    $\n$\nDo you want to continue? Click 'No' to install AssaultCube in a different folder." \
+    $\nThe previous Dune Strike version in this folder will be uninstalled if you install the new version here. \
+    $\n$\nDo you want to continue? Click 'No' to install Dune Strike in a different folder." \
     IDYES true IDNO false
   true:
     ClearErrors
@@ -253,7 +253,7 @@ VIProductVersion "${AC_FULLVERSIONINT}"
 VIAddVersionKey "ProductName" "${AC_SHORTNAME}"
 VIAddVersionKey "CompanyName" "Rabid Viper Productions"
 VIAddVersionKey "LegalCopyright" "Copyright © Rabid Viper Productions"
-VIAddVersionKey "FileDescription" "AssaultCube is a FREE, multiplayer, first-person shooter game, based on the CUBE engine."
+VIAddVersionKey "FileDescription" "Dune Strike is a FREE, multiplayer, first-person shooter game, based on the CUBE engine."
 VIAddVersionKey "FileVersion" "${AC_FULLVERSIONINT}"
 VIAddVersionKey "ProductVersion" "${AC_FULLVERSIONINT}"
 
@@ -267,7 +267,7 @@ FunctionEnd
 Function .onInstSuccess
 
     IfSilent skipopenlink
-    StrCpy $0 "http://assault.cubers.net/releasenotes/v${AC_MAJORVERSIONINT}.${AC_MINORVERSIONINT}/"
+    StrCpy $0 "http://github.com/aminghaseminia/dunestrike/releasenotes/v${AC_MAJORVERSIONINT}.${AC_MINORVERSIONINT}/"
     Call openLinkNewWindow
     skipopenlink:
 
@@ -276,7 +276,7 @@ FunctionEnd
 Function un.onUninstSuccess
 
     IfSilent skipopenlink
-    StrCpy $0 "http://assault.cubers.net/uninstallnotes/v${AC_MAJORVERSIONINT}.${AC_MINORVERSIONINT}/"
+    StrCpy $0 "http://github.com/aminghaseminia/dunestrike/uninstallnotes/v${AC_MAJORVERSIONINT}.${AC_MINORVERSIONINT}/"
     Call un.openLinkNewWindow  
     skipopenlink:
 
@@ -350,12 +350,12 @@ Function WelcomePage
 
     SendMessage $IMAGECTL ${STM_SETIMAGE} ${IMAGE_BITMAP} $IMAGE
 
-    nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 10u -130u 20u "Welcome to the AssaultCube Setup Wizard"
+    nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 10u -130u 20u "Welcome to the Dune Strike Setup Wizard"
     Pop $HEADLINE
 
     SendMessage $HEADLINE ${WM_SETFONT} $HEADLINE_FONT 0
 
-    nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 32u -130u -32u "This wizard will guide you through the installation of AssaultCube ${AC_FULLVERSIONINT}.$\r$\n$\r$\nClick Next to continue."
+    nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 32u -130u -32u "This wizard will guide you through the installation of Dune Strike ${AC_FULLVERSIONINT}.$\r$\n$\r$\nClick Next to continue."
     Pop $TEXT
 
     SetCtlColors $DIALOG "" 0xffffff
@@ -388,12 +388,12 @@ Function FinishPage
 
     SendMessage $IMAGECTL ${STM_SETIMAGE} ${IMAGE_BITMAP} $IMAGE
 
-    nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 10u -130u 20u "Completing the AssaultCube Setup Wizard"
+    nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 10u -130u 20u "Completing the Dune Strike Setup Wizard"
     Pop $HEADLINE
 
     SendMessage $HEADLINE ${WM_SETFONT} $HEADLINE_FONT 0
 
-    nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 32u -130u -32u "AssaultCube has been installed on your computer.$\r$\n$\r$\nClick Finish to close this wizard."
+    nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 32u -130u -32u "Dune Strike has been installed on your computer.$\r$\n$\r$\nClick Finish to close this wizard."
     Pop $TEXT
 
     SetCtlColors $DIALOG "" 0xffffff
@@ -412,7 +412,7 @@ FunctionEnd
 
 ; Installer Sections
 
-Section "AssaultCube ${AC_FULLVERSIONINT}" AC
+Section "Dune Strike ${AC_FULLVERSIONINT}" AC
 
     SectionIn RO
 
@@ -437,8 +437,8 @@ Section "AssaultCube ${AC_FULLVERSIONINT}" AC
     WriteRegStr HKLM "${ARP}" "UninstallString" "$INSTDIR\Uninstall.exe"
     WriteRegStr HKLM "${ARP}" "DisplayIcon" "$INSTDIR\docs\images\favicon.ico"
     WriteRegStr HKLM "${ARP}" "HelpLink" "$INSTDIR\README.html"
-    WriteRegStr HKLM "${ARP}" "URLInfoAbout" "http://assault.cubers.net"
-    WriteRegStr HKLM "${ARP}" "URLUpdateInfo" "http://assault.cubers.net/download.html"
+    WriteRegStr HKLM "${ARP}" "URLInfoAbout" "http://github.com/aminghaseminia/dunestrike"
+    WriteRegStr HKLM "${ARP}" "URLUpdateInfo" "http://github.com/aminghaseminia/dunestrike/download.html"
     WriteRegStr HKLM "${ARP}" "DisplayVersion" "${AC_FULLVERSIONINT}"
     WriteRegDWORD HKLM "${ARP}" "EstimatedSize" "$EstimatedSize"
     WriteRegDWORD HKLM "${ARP}" "VersionMajor" ${AC_MAJORVERSIONINT}
@@ -458,7 +458,7 @@ Section "AssaultCube ${AC_FULLVERSIONINT}" AC
         SetShellVarContext all
 
         CreateDirectory "${AC_STARTMENUFOLDER}"
-        CreateShortCut "${AC_STARTMENUFOLDER}\${AC_SHORTNAME}.lnk" "$INSTDIR\assaultcube.bat" "" "$INSTDIR\docs\images\favicon.ico" 0 SW_SHOWMINIMIZED
+        CreateShortCut "${AC_STARTMENUFOLDER}\${AC_SHORTNAME}.lnk" "$INSTDIR\dunestrike.bat" "" "$INSTDIR\docs\images\favicon.ico" 0 SW_SHOWMINIMIZED
         CreateShortCut "${AC_STARTMENUFOLDER}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\docs\images\favicon.ico" 0
         CreateShortCut "${AC_STARTMENUFOLDER}\README.lnk" "$INSTDIR\README.html" "" "" 0
         CreateShortCut "${AC_STARTMENUFOLDER}\Profile folder.lnk" "$0\${AC_PROFILEPATH}"
@@ -478,7 +478,7 @@ Section "Desktop Shortcuts" DESKSHORTCUTS
 
     SetShellVarContext all
 
-    CreateShortCut "$DESKTOP\${AC_SHORTNAME}.lnk" "$INSTDIR\assaultcube.bat" "" "$INSTDIR\docs\images\favicon.ico" 0 SW_SHOWMINIMIZED
+    CreateShortCut "$DESKTOP\${AC_SHORTNAME}.lnk" "$INSTDIR\dunestrike.bat" "" "$INSTDIR\docs\images\favicon.ico" 0 SW_SHOWMINIMIZED
 
 SectionEnd
 
@@ -486,8 +486,8 @@ Section "Register URL protocol" REGISTERURL
 
     WriteRegStr HKCR "${AC_URLPROTOCOL}" "" "${AC_SHORTNAME}"
     WriteRegStr HKCR "${AC_URLPROTOCOL}" "URL Protocol" ""
-    WriteRegStr HKCR "${AC_URLPROTOCOL}\DefaultIcon" "" '"$INSTDIR\bin_win32\ac_client.exe"'
-    WriteRegStr HKCR "${AC_URLPROTOCOL}\shell\open\command" "" '"cmd.exe" /C cd "$INSTDIR" & "assaultcube.bat" "%1"'
+    WriteRegStr HKCR "${AC_URLPROTOCOL}\DefaultIcon" "" '"$INSTDIR\bin_win32\dunestrike_client.exe"'
+    WriteRegStr HKCR "${AC_URLPROTOCOL}\shell\open\command" "" '"cmd.exe" /C cd "$INSTDIR" & "dunestrike.bat" "%1"'
 
 SectionEnd
 
@@ -505,13 +505,13 @@ Section "Uninstall"
     Delete "$INSTDIR\demos\tutorial_demo.dmo"
     RMDir "$INSTDIR\demos"
     RMDir /r "$INSTDIR\docs"
-    Delete "$INSTDIR\mods\ac_mods_README.html"
+    Delete "$INSTDIR\mods\dunestrike_mods_README.html"
     Delete "$INSTDIR\mods\protox_hq_reskin.zip"
     RMDir "$INSTDIR\mods"
     RMDir /r "$INSTDIR\packages"
     RMDir "$INSTDIR\screenshots"
     RMDir /r "$INSTDIR\scripts"
-    Delete "$INSTDIR\assaultcube*.bat"
+    Delete "$INSTDIR\dunestrike*.bat"
     Delete "$INSTDIR\changelog.txt"
     Delete "$INSTDIR\README*"
     Delete "$INSTDIR\server*.bat"
@@ -545,7 +545,7 @@ SectionEnd
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 
-    !insertmacro MUI_DESCRIPTION_TEXT ${AC} "Installs the required AssaultCube core files"
+    !insertmacro MUI_DESCRIPTION_TEXT ${AC} "Installs the required Dune Strike core files"
     !insertmacro MUI_DESCRIPTION_TEXT ${OAL} "Installs a sound library for 3D audio"
     !insertmacro MUI_DESCRIPTION_TEXT ${DESKSHORTCUTS} "Creates shortcuts on your Desktop"
     !insertmacro MUI_DESCRIPTION_TEXT ${REGISTERURL} "Registers the ${AC_URLPROTOCOL}:// protocol"

@@ -348,7 +348,7 @@ class CBotManager
      void InitBotItems(void);
 
      friend class CBot;
-     friend class CACBot;
+     friend class CDuneBot;
      friend class CWaypointClass;
 
 public:
@@ -390,7 +390,7 @@ public:
                           char *szOutput);
 };
 
-#include "ac_bot.h"
+#include "ds_bot.h"
 
 extern CBotManager BotManager;
 extern const vec g_vecZero;

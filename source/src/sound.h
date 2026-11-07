@@ -68,7 +68,7 @@ enum
     S_AWESOME1,
     S_AWESOME2,
 // end: voicecoms
-    S_ITEMHELMET, // begin: Sounds for AssaultCube v1.1.0.4 onwards
+    S_ITEMHELMET, // begin: Sounds for Dune Strike v1.1.0.4 onwards
     S_HEARTBEAT,
     S_KTFSCORE,
     S_CAMERA,

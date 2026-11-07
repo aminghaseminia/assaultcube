@@ -20,6 +20,6 @@ cd source\vcpp\buildEnv\%ACDIR%
 del %NEWACTAG%.zip
 
 rem get documentation files from latest remote release tag
-svn export --force https://github.com/assaultcube/assaultcube.github.io/trunk/htdocs/docs/ docs
+svn export --force https://github.com/dunestrike/dunestrike.github.io/trunk/htdocs/docs/ docs
 
 pause

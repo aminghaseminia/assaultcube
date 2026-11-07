@@ -8,8 +8,8 @@
 //   - server:  -R
 //
 // Compatibility: the client probes the server with the standard SV_EXTENSION
-// message ("acvoice::hello"). Stock servers ignore unknown extensions. Only a
-// server that answers with SV_VOICESUPPORT gets voice data, so stock clients
+// message ("dsvoice::hello"). Unpatched servers ignore unknown extensions. Only a
+// server that answers with SV_VOICESUPPORT gets voice data, so unpatched clients
 // never receive any of the new messages.
 
 #include "cube.h"
@@ -461,7 +461,7 @@ void voiceupdate()
         {
             lastprobe = totalmillis;
             probes++;
-            addmsg(SV_EXTENSION, "rsi", "acvoice::hello", 0);
+            addmsg(SV_EXTENSION, "rsi", "dsvoice::hello", 0);
         }
     }
 

@@ -406,7 +406,7 @@ struct signalbinder
         }
         free(symbols);
 
-        fatal("AssaultCube error (%d)", sig);
+        fatal("Dune Strike error (%d)", sig);
 
     }
 
@@ -710,7 +710,7 @@ bool glmatrixf::invert(const glmatrixf &m, float mindet)
 // all embedded servers and all standalone servers except on linux use SDL
 // the standalone linux version uses native linux libraries - and also makes use of shared memory
 
-#ifdef AC_USE_SDL_THREADS
+#ifdef DS_USE_SDL_THREADS
     #include "SDL_timer.h"
     #include "SDL_thread.h"      // also fetches SDL_mutex.h
 #else
@@ -721,7 +721,7 @@ bool glmatrixf::invert(const glmatrixf &m, float mindet)
 
 static int sl_sem_errorcountdummy = 0;
 
-#ifdef AC_USE_SDL_THREADS
+#ifdef DS_USE_SDL_THREADS
 sl_semaphore::sl_semaphore(int init, int *ecnt)
 {
     data = (void *)SDL_CreateSemaphore(init);
@@ -813,7 +813,7 @@ void sl_semaphore::post()
 #endif
 
 // (wrapping threads is slightly ugly, since SDL threads use a different return value (int) than pthreads (void *) - and that can't be solved with a typecast)
-#ifdef AC_USE_SDL_THREADS
+#ifdef DS_USE_SDL_THREADS
 struct sl_threadinfo { int (*fn)(void *); void *data; SDL_Thread *handle; volatile char done; };
 
 static int sl_thread_indir(void *info)
@@ -928,7 +928,7 @@ bool sl_pollthread(void *ti)
 }
 
 // platform dependent stuff not covered by enet (use POSIX or, if possible, SDL)
-#ifdef AC_USE_SDL_THREADS
+#ifdef DS_USE_SDL_THREADS
 void sl_sleep(int duration)
 {
     SDL_Delay(duration);

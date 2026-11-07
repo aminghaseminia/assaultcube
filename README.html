@@ -1,23 +1,68 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-    <meta http-equiv="refresh" content="0; url=docs/index.html">
-    <meta name="description" content="Documentation index of the game AssaultCube @ https://assault.cubers.net/">
-    <meta name="author" content="Rabid Viper Productions">
-    <meta name="copyright" content="You may be able to redistribute this content under specific conditions.
-    Please read the licensing information, available @ https://assault.cubers.net/docs/license.html for the
-    conditions that would apply to what you may be redistributing.">
-    <title>AssaultCube Documentation</title>
-    <style type="text/css">
-      body {
-        background-color: #222222;
-      }
-    </style>
-  </head>
-  <body>
-    <div>
-      &nbsp;
-    </div>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dune Strike</title>
+<style>
+  :root { color-scheme: dark; }
+  body {
+    margin: 0;
+    background: #0b0d0c;
+    color: #e8e8e8;
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+  h1 { font-size: 2.6rem; letter-spacing: .08em; margin: 0 0 .2em; color: #fff; }
+  h1 span { color: #d23b2b; }
+  h2 { margin-top: 2.2em; border-bottom: 1px solid #333; padding-bottom: .25em; }
+  a { color: #e06a5c; }
+  code, pre { background: #151817; border-radius: 6px; }
+  code { padding: .1em .35em; }
+  pre { padding: 14px 16px; overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border-bottom: 1px solid #2a2e2c; padding: .45em .6em; text-align: left; }
+  .tagline { color: #b9c0bd; font-size: 1.15rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>DUNE <span>STRIKE</span></h1>
+  <p class="tagline">Free, fast, low-bandwidth multiplayer FPS for LAN and small online servers.</p>
+
+  <h2>Features</h2>
+  <ul>
+    <li>Push-to-talk voice chat with simultaneous speakers and an on-screen VU meter.</li>
+    <li>Hijabi player skins for both teams.</li>
+    <li>Classic arena modes, bots, demo recording and a built-in map editor.</li>
+    <li>Runs on Windows, Linux and Apple Silicon macOS.</li>
+  </ul>
+
+  <h2>Quick start</h2>
+  <p><strong>Linux / macOS:</strong> unpack the archive and run:</p>
+  <pre><code>./dunestrike.sh</code></pre>
+  <p><strong>Windows:</strong> unzip the archive and run <code>dunestrike.bat</code>.</p>
+
+  <h2>LAN server</h2>
+  <pre><code>./dunestrike-server.sh -n"Dune Strike LAN" -c10</code></pre>
+  <p>Join from another machine:</p>
+  <pre><code>connect 192.168.1.10 28763</code></pre>
+
+  <h2>Voice chat</h2>
+  <p>Voice is enabled by default. Hold <strong>X</strong> to talk and press
+  <strong>F9</strong> to toggle voice chat.</p>
+
+  <h2>Build from source</h2>
+  <pre><code>cd source/enet
+./configure --enable-shared=no --enable-static=yes
+make -j4
+cd ../src
+make -j4 client_install server_install</code></pre>
+
+  <h2>Credits and license</h2>
+  <p>Dune Strike is free software distributed under a zlib-style license.
+  See <a href="CREDITS.md">CREDITS.md</a> for the engine lineage, contributors
+  and asset licensing.</p>
+</main>
+</body>
 </html>

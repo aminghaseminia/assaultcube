@@ -1,7 +1,7 @@
 //
 // C++ Implementation: bot
 //
-// Description: Main bot code for AssaultCube
+// Description: Main bot code for Dune Strike
 //
 // Main bot file
 //
@@ -19,7 +19,7 @@ extern void spawnstate(playerent *d);
 
 //AC Bot class begin
 
-void CACBot::Spawn()
+void CDuneBot::Spawn()
 {
     // Init all bot variabeles
     m_pMyEnt->nextprimary = 2 + rnd(5); // 2 == GUN_CARBINE, GUN_SHOTGUN, GUN_SUBGUN, GUN_SNIPER, GUN_ASSAULT
@@ -65,7 +65,7 @@ void CACBot::Spawn()
      ResetWaypointVars();
 }
 
-void CACBot::CheckItemPickup()
+void CDuneBot::CheckItemPickup()
 {
     checkitems(m_pMyEnt);
 }

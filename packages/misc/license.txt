@@ -6,6 +6,8 @@ EXCEPT... the following files:
 	* nopreview.jpg
 	* scope.png
 	* startscreen.png
+	* icon.png
+	* icon.bmp
 	* chars_default.png
 	* chars_monospace.png
 	* blood.png
@@ -171,9 +173,9 @@ Permission has been granted from Antiklimax to make use
 of this file for anything, in any way, freely.
 
 ================================================================================
-The "startscreen.png" & "nopreview.jpg" logo was gifted to Rabid Viper Productions
-from Lewis Communications. They allowed us to use and re-license it freely, in any
-way we wish.
+The "nopreview.jpg" logo was gifted to Rabid Viper Productions from Lewis
+Communications. They allowed us to use and re-license it freely, in any way we
+wish.
 
 Some minor modifications were made and we now allow redistribution under the 
 "Attribution-NonCommercial-ShareAlike 3.0 Unported" Creative Commons
@@ -192,6 +194,12 @@ work under the following conditions:
       distribute the resulting work only under the same or similar license to this one.
     * Origin - You must not use the work(s) to misrepresent the origin of AssaultCube,
       or claim that you created AssaultCube or any of the original AssaultCube package(s).
+
+================================================================================
+"startscreen.png", "icon.png" and "icon.bmp" were created for Dune Strike and
+may be redistributed under the same zlib-style terms as the game code. They do
+not contain the original AssaultCube logo.
+
 
 With the understanding that:
 

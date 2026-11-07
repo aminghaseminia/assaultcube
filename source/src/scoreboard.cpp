@@ -440,7 +440,7 @@ const char *asciiscores(bool destjpg)
     char *t = buf + 8, *e = buf + MAXJPGCOM;
     if(destjpg)
     {
-        formatstring(text)("AssaultCube Screenshot (%s)\n", asctimestr());
+        formatstring(text)("Dune Strike Screenshot (%s)\n", asctimestr());
         addstr(t, e, text);
     }
     if(getclientmap()[0])

@@ -112,9 +112,9 @@ void connectserv(char *servername, int *serverport, char *password)
         modprotocol = false;
         connectserv_(servername, *serverport, password);
     }else{
-        extern char *aaconnect;// assaultcube://example.org[:28763][/][?[port=28763][&password=secret]]
+        extern char *aaconnect;// dunestrike://example.org[:28763][/][?[port=28763][&password=secret]]
         string cp1, cp2, cp3, cpc;
-        formatstring(cp1)("assaultcube://%s",servername);
+        formatstring(cp1)("dunestrike://%s",servername);
         if(serverport)formatstring(cp2)(":%d",*serverport);
         if(password)formatstring(cp3)("/?password=%s",password);
         formatstring(cpc)("%s%s%s", cp1, cp2, cp3);
@@ -291,10 +291,10 @@ COMMAND(whereami, "");
 void current_version(char *text)
 {
     int version = atoi(text);
-    if (version && AC_VERSION<version)
+    if (version && DS_VERSION<version)
     {
-        hudoutf("\f3YOUR VERSION OF ASSAULTCUBE IS OUTDATED!");
-        conoutf("\f3YOU MUST UPDATE ASSAULTCUBE\nplease visit \f2http://assault.cubers.net \f3for more information");
+        hudoutf("\f3YOUR VERSION OF DUNESTRIKE IS OUTDATED!");
+        conoutf("\f3YOU MUST UPDATE DUNESTRIKE\nplease visit \f2http://github.com/aminghaseminia/dunestrike \f3for more information");
     }
 }
 COMMAND(current_version, "s");
@@ -514,7 +514,7 @@ void sendintro()
 {
     packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
     putint(p, SV_CONNECT);
-    putint(p, AC_VERSION);
+    putint(p, DS_VERSION);
     putint(p, getbuildtype());
     sendstring(player1->name, p);
     sendstring(genpwdhash(player1->name, clientpassword, sessionid), p);
@@ -611,7 +611,7 @@ bool securemapcheck(const char *map, bool msg)
             if(curpeer)
             {
                 conoutf("\f3If you get this error often, you (or the server) may be running an outdated game.");
-                conoutf("\f3You can check for updates at \f1http://assault.cubers.net/download.html");
+                conoutf("\f3You can check for updates at \f1http://github.com/aminghaseminia/dunestrike/download.html");
             }
         }
         return true;

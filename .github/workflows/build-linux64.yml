@@ -1,42 +1,46 @@
-name: build linux64 binaries
+name: build Linux binaries (Dune Strike)
 
 on:
   workflow_dispatch:
-  
+
 jobs:
   linux64:
     name: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: setup libraries
-        run: sudo apt install libsdl2-dev libsdl2-image-dev zlib1g-dev libogg-dev libvorbis-dev libopenal-dev libcurl4
+      - uses: actions/checkout@v4
+
+      - name: Install libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential clang make libsdl2-dev libsdl2-image-dev \
+            libopenal-dev libvorbis-dev libx11-dev zlib1g-dev
         shell: bash
 
-      - name: prepare production build
-        run: sed 's@//#define PRODUCTION@#define PRODUCTION@' source/src/cube.h
+      - name: Enable production build
+        run: sed -i 's@//#define PRODUCTION@#define PRODUCTION@' source/src/cube.h
         shell: bash
-        
-      - name: make
+
+      - name: Build
         run: |
-          cd source/src
-          make clean
-          make
-          make install
-          cd ../..
+          cd source/enet
+          ./configure --enable-shared=no --enable-static=yes
+          make -j4
+          cd ../src
+          make -j4 client_install server_install
         shell: bash
-        
-      - name: prepare artifact
+
+      - name: Prepare artifact
         run: |
-          mkdir dist
-          cp bin_unix/native_client dist/linux_64_client
-          cp bin_unix/native_server dist/linux_64_server
+          mkdir -p dist
+          cp bin_unix/dunestrike_client dist/linux_64_client
+          cp bin_unix/dunestrike_server dist/linux_64_server
           echo "you need to chmod 750 linux_64_*" > dist/info-make-executable.txt
         shell: bash
-        
-      - name: upload artifact
-        uses: actions/upload-artifact@v3
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: linux64-binaries
           path: dist

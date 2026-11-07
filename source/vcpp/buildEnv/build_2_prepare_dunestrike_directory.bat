@@ -3,13 +3,13 @@ set ACDIR=AC
 set ACDIRTESTING=AC_testing
 
 echo 1. copy your newly compiled binaries to %ACDIRTESTING%\bin_win32\
-echo 2. edit %ACDIRTESTING%\assaultcube.bat and change the profile path to the local directory i.e. "--home=" 
-echo 3. launch %ACDIRTESTING%\assaultcube.bat and execute /loadallmapmodels then quit AC
+echo 2. edit %ACDIRTESTING%\dunestrike.bat and change the profile path to the local directory i.e. "--home=" 
+echo 3. launch %ACDIRTESTING%\dunestrike.bat and execute /loadallmapmodels then quit AC
 pause
 
 rem copy binaries
-copy /Y %ACDIRTESTING%\bin_win32\ac_client.exe %ACDIR%\bin_win32\
-copy /Y %ACDIRTESTING%\bin_win32\ac_server.exe %ACDIR%\bin_win32\
+copy /Y %ACDIRTESTING%\bin_win32\dunestrike_client.exe %ACDIR%\bin_win32\
+copy /Y %ACDIRTESTING%\bin_win32\dunestrike_server.exe %ACDIR%\bin_win32\
 
 rem copy mapmodelattributes.cfg
 copy /Y %ACDIRTESTING%\profile\config\mapmodelattributes.cfg %ACDIR%\config\

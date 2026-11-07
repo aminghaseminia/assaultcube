@@ -1,22 +1,22 @@
 #!/bin/bash
-# Adds the handler for the connect protocol for AssaultCube to your system.
+# Adds the handler for the connect protocol for Dune Strike to your system.
 
-CUBE_DIR=$(dirname "$(readlink -f "${0}")")
-CUBE_EXEC=assaultcube.sh
+GAME_DIR=$(dirname "$(readlink -f "${0}")")
+GAME_EXEC=dunestrike.sh
 LAUNCHERPATH="${HOME}/.local/share/applications/"
 
-LAUNCHERFILE=assaultcube-connectprotocol.desktop
-LAUNCHERTITLE="AssaultCube Connect Protocol"
+LAUNCHERFILE=dunestrike-connectprotocol.desktop
+LAUNCHERTITLE="Dune Strike Connect Protocol"
 
 # Remove existing desktop entries, if they exist:
-# avoiding clashing with menuitem scripts & filenames which look for "assaultcube*"
-EXISTINGEXEC=`find "${LAUNCHERPATH}" -name "connectprotocol-assaultcube*" | xargs`
+# avoiding clashing with menuitem scripts & filenames which look for "dunestrike*"
+EXISTINGEXEC=`find "${LAUNCHERPATH}" -name "connectprotocol-dunestrike*" | xargs`
 if [ "$EXISTINGEXEC" != "" ]; then
   echo "The following entries currently exist:"
   echo "$EXISTINGEXEC"
   read -p "Would you like them all to be deleted? (y/N): " -r REPLY
   if [ "$REPLY" = "y" ] || [ "$REPLY" = "yes" ] || [ "$REPLY" = "Y" ] || [ "$REPLY" = "YES" ]; then
-    find "${LAUNCHERPATH}" -name "connectprotocol-assaultcube*" -delete
+    find "${LAUNCHERPATH}" -name "connectprotocol-dunestrike*" -delete
     echo "Deleted entries as requested." && echo ""
     exit 0
   else
@@ -30,32 +30,32 @@ cat > "${LAUNCHERPATH}"${LAUNCHERFILE} << EOF
 Type=Application
 Name=$LAUNCHERTITLE
 StartupNotify=false
-Exec=$CUBE_DIR/$CUBE_EXEC %u
-MimeType=x-scheme-handler/assaultcube;
+Exec=$GAME_DIR/$GAME_EXEC %u
+MimeType=x-scheme-handler/dunestrike;
 EOF
 
 havexdgmime=$(which xdg-mime)
 if [ "$havexdgmime" != "" ]; then
     # ignoring any previously registered handler. this should be the current default.
-    xdg-mime default assaultcube-connectprotocol.desktop x-scheme-handler/assaultcube
-    worked=$(xdg-mime query default x-scheme-handler/assaultcube 2>/dev/null)
+    xdg-mime default dunestrike-connectprotocol.desktop x-scheme-handler/dunestrike
+    worked=$(xdg-mime query default x-scheme-handler/dunestrike 2>/dev/null)
     if [ "$worked" != "${LAUNCHERFILE}" ]; then
         # non-empty output should be the desktop filename
         # due to the EXISTINGEXEC routine we can leave the desktop entry for analysis
-        echo "The AssaultCube desktop entry could not be hooked to the x-scheme-handler/assaultcube mimetype."
+        echo "The Dune Strike desktop entry could not be hooked to the x-scheme-handler/dunestrike mimetype."
         exit 1
     fi
 else
-    echo "your system does not appear to have xdg-mime to register an x-scheme-handler for the AssaultCube connect protocol."
-    # you are welcome to provide a patch via PR on our github https://github.com/assaultcube/AC/
+    echo "your system does not appear to have xdg-mime to register an x-scheme-handler for the Dune Strike connect protocol."
+    # you are welcome to provide a patch via PR on our github https://github.com/aminghaseminia/dunestrike
 fi
 
 if [ -f "${LAUNCHERPATH}"${LAUNCHERFILE} ]; then
-  echo "The AssaultCube connect protocol desktop entry has been successfully created at"
+  echo "The Dune Strike connect protocol desktop entry has been successfully created at"
   echo "${LAUNCHERPATH}"${LAUNCHERFILE}
   exit 0
 else
-  echo "For some reason, we're unable to install the AssaultCube connect protocol desktop entry."
+  echo "For some reason, we're unable to install the Dune Strike connect protocol desktop entry."
   exit 1
 fi
 

@@ -1,16 +1,16 @@
 #!/bin/sh
-# Checks certain parts of an AssaultCube installation
+# Checks certain parts of a Dune Strike installation
 #
 # Try this, if your game does not start.
 #
 
-CUBE_DIR=$(dirname "$(readlink -f "${0}")")
-cd "$CUBE_DIR"
+GAME_DIR=$(dirname "$(readlink -f "${0}")")
+cd "$GAME_DIR"
 
 # check libs
 
 SERVERLIBS="libz"
-CLIENTLIBS="libSDL-1.2 libz libX11 libSDL_image libogg libvorbis libopenal"
+CLIENTLIBS="libSDL2 libz libX11 libSDL2_image libogg libvorbis libopenal"
 
 if [ -x "/sbin/ldconfig" ]; then
   echo "checking libraries:"
@@ -42,9 +42,9 @@ CHKSUMFILE="packages/misc/checksums_md5.txt"
 if [ -e $CHKSUMFILE ]; then
   echo "checking installed game files:"
   if md5sum -c $CHKSUMFILE --status; then
-    echo " all files of the AC package are checked and OK"
+    echo " all files of the Dune Strike package are checked and OK"
   else
-    echo " some files of your AC installation appear to be missing or damaged"
+    echo " some files of your Dune Strike installation appear to be missing or damaged"
     read -p " press enter, to see the list of files..." -r dummy
     md5sum -c $CHKSUMFILE --quiet | less
   fi
@@ -56,7 +56,7 @@ echo ""
 # list existing desktop launcher items
 
 LAUNCHERPATH="${HOME}/.local/share/applications/"
-EXISTINGEXEC=`find "${LAUNCHERPATH}" -name "assaultcube*" | xargs`
+EXISTINGEXEC=`find "${LAUNCHERPATH}" -name "dunestrike*" | xargs`
 if [ "$EXISTINGEXEC" != "" ]; then
   echo "the following menuitem(s) wer found:"
   echo " $EXISTINGEXEC"
@@ -68,8 +68,8 @@ echo ""
 # find out, which binaries would be used to start the game
 
 echo "checking game executables:"
-SERVERBIN=`./server.sh --outputbinarypath`
-CLIENTBIN=`./assaultcube.sh --outputbinarypath`
+SERVERBIN=`./dunestrike-server.sh --outputbinarypath`
+CLIENTBIN=`./dunestrike.sh --outputbinarypath`
 
 if [ -x "$SERVERBIN" ]; then
   echo " the server will use the binary $SERVERBIN"

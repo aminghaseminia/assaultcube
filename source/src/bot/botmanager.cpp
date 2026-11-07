@@ -881,7 +881,7 @@ botent *CBotManager::CreateBot(const char *team, const char *skill, const char *
     if (!m) return NULL;
     loopi(NUMGUNS) m->ammo[i] = m->mag[i] = 0;
     m->lifesequence = 0;
-    m->pBot = new CACBot;
+    m->pBot = new CDuneBot;
     m->type = ENT_BOT;
     m->pBot->m_pMyEnt = m;
     m->pBot->m_iLastBotUpdate = 0;

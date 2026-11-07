@@ -1,4 +1,4 @@
-TO ENSURE YOU HAVE NO ERRORS WITH ASSAULTCUBE:
+TO ENSURE YOU HAVE NO ERRORS WITH DUNESTRIKE:
 	* Don't edit, rename or delete ANY files in this directory.
 	* Don't add files to this directory.
 

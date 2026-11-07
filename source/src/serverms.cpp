@@ -20,8 +20,8 @@ extern struct servercommandline scl;
 bool usemaster = false;
 ENetSocket mastersock = ENET_SOCKET_NULL;
 ENetAddress masteraddress = { ENET_HOST_ANY, ENET_PORT_ANY }, serveraddress = { ENET_HOST_ANY, ENET_PORT_ANY };
-string mastername = AC_MASTER_URI;
-int masterport = AC_MASTER_PORT;
+string mastername = DS_MASTER_URI;
+int masterport = DS_MASTER_PORT;
 int lastupdatemaster = 0;
 vector<char> masterout, masterin;
 int masteroutpos = 0, masterinpos = 0;
@@ -49,7 +49,7 @@ ENetSocket connectmaster()
 
     if(masteraddress.host == ENET_HOST_ANY)
     {
-        xlog(ACLOG_INFO, "looking up %s:%d...", mastername, masterport);
+        xlog(DSLOG_INFO, "looking up %s:%d...", mastername, masterport);
         masteraddress.port = masterport;
         if(!resolverwait(mastername, &masteraddress)) return ENET_SOCKET_NULL;
     }
@@ -61,7 +61,7 @@ ENetSocket connectmaster()
     }
     if(sock == ENET_SOCKET_NULL || connectwithtimeout(sock, mastername, masteraddress) < 0)
     {
-        xlog(ACLOG_WARNING, sock==ENET_SOCKET_NULL ? "could not open socket" : "could not connect");
+        xlog(DSLOG_WARNING, sock==ENET_SOCKET_NULL ? "could not open socket" : "could not connect");
         return ENET_SOCKET_NULL;
     }
 
@@ -104,10 +104,10 @@ void processmasterinput()
         while(args < end && isspace(*args)) args++;
 
         if(!strncmp(input, "failreg", cmdlen))
-            xlog(ACLOG_WARNING, "master server registration failed: %s", args);
+            xlog(DSLOG_WARNING, "master server registration failed: %s", args);
         else if(!strncmp(input, "succreg", cmdlen))
         {
-            xlog(ACLOG_INFO, "master server registration succeeded");
+            xlog(DSLOG_INFO, "master server registration succeeded");
         }
         else processmasterinput(input, cmdlen, args);
 
@@ -170,7 +170,7 @@ static inline void updatemasterserver(int millis, int port, int _interm)
     {
         string servdesc; extern string servpubkey;
         filtertext(servdesc, scl.servdesc_full[0] ? scl.servdesc_full : "noname", FTXT__GLOBALNAME, 20);
-        if(mastername[0]) requestmasterf("regserv %d %s-%s %d\n", port, servdesc, scl.ssk ? servpubkey : "nokey", AC_VERSION);
+        if(mastername[0]) requestmasterf("regserv %d %s-%s %d\n", port, servdesc, scl.ssk ? servpubkey : "nokey", DS_VERSION);
         lastupdatemaster = millis + 1;
     }
 }
@@ -330,7 +330,7 @@ void servermsinit(bool listen)
 {
     if(scl.master && *scl.master) copystring(mastername, scl.master);
     usemaster = !listen || (listen && scl.master && scl.ssk && scl.maxclients <= MAXCLIENTSONMASTER);  // true: connect to master, false: LAN-only server
-    if(scl.maxclients > MAXCLIENTSONMASTER) mlog(ACLOG_WARNING, "maxclient exceeded: cannot register");
+    if(scl.maxclients > MAXCLIENTSONMASTER) mlog(DSLOG_WARNING, "maxclient exceeded: cannot register");
     disconnectmaster();
 
     if(listen)
@@ -338,7 +338,7 @@ void servermsinit(bool listen)
         ENetAddress address = { ENET_HOST_ANY, (enet_uint16) CUBE_SERVINFO_PORT(scl.serverport) };
         if(*scl.ip)
         {
-            if(enet_address_set_host(&address, scl.ip) < 0) mlog(ACLOG_WARNING, "server ip \"%s\" not resolved", scl.ip);
+            if(enet_address_set_host(&address, scl.ip) < 0) mlog(DSLOG_WARNING, "server ip \"%s\" not resolved", scl.ip);
             else serveraddress.host = address.host;
         }
 
@@ -358,15 +358,15 @@ void servermsinit(bool listen)
             enet_socket_destroy(lansock);
             lansock = ENET_SOCKET_NULL;
         }
-        if(lansock == ENET_SOCKET_NULL) mlog(ACLOG_WARNING, "could not create LAN server info socket");
+        if(lansock == ENET_SOCKET_NULL) mlog(DSLOG_WARNING, "could not create LAN server info socket");
         else enet_socket_set_option(lansock, ENET_SOCKOPT_NONBLOCK, 1);
     }
     if(!usemaster){
-        mlog(ACLOG_INFO, "server is LAN-only - without connection to masterserver");
+        mlog(DSLOG_INFO, "server is LAN-only - without connection to masterserver");
         if(listen){
-            if(!scl.ssk) mlog(ACLOG_INFO, "ACTION REQUIRED: you must provide a PRIVATE SERVER KEY via the '-Y' command line argument");
-            if(!scl.master) mlog(ACLOG_INFO, "LAN-only because no master is given");
-            if(scl.maxclients>MAXCLIENTSONMASTER) mlog(ACLOG_INFO, "LAN-only because too many clients for master");
+            if(!scl.ssk) mlog(DSLOG_INFO, "ACTION REQUIRED: you must provide a PRIVATE SERVER KEY via the '-Y' command line argument");
+            if(!scl.master) mlog(DSLOG_INFO, "LAN-only because no master is given");
+            if(scl.maxclients>MAXCLIENTSONMASTER) mlog(DSLOG_INFO, "LAN-only because too many clients for master");
         }
     }
 }

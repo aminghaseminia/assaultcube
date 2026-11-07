@@ -4,8 +4,8 @@
 # Run "sh configfolder_script.sh --all" to auto-accept "yes" as the answer to
 # all questions in this script.
 
-# This is the main AssaultCube folder:
-PATHTOACDIR=~/AssaultCube/AC
+# This is the main Dune Strike folder:
+PATHTOACDIR=~/dunestrike
 
 # This is the docs folder (which holds reference.xml):
 ABSOLUTEPATHTODOCS=$PATHTOACDIR/docs

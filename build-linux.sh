@@ -1,7 +1,7 @@
 #!/bin/sh
-# Build AssaultCube for Linux (production build) and install the binaries
+# Build Dune Strike for Linux (production build) and install the binaries
 # into bin_unix/. Run this after `git pull` — the app-drawer entry points
-# at assaultcube.sh in this directory, so the drawer always launches the
+# at dunestrike.sh in this directory, so the drawer always launches the
 # freshly built version.
 set -e
 cd "$(dirname "$(readlink -f "$0")")"
@@ -17,4 +17,4 @@ make -j"$(nproc)" client server install \
   CXX=clang++ \
   "CXXFLAGS=-O3 -fomit-frame-pointer -DPRODUCTION"
 
-echo "==> done: bin_unix/native_client, bin_unix/native_server"
+echo "==> done: bin_unix/dunestrike_client, bin_unix/dunestrike_server"

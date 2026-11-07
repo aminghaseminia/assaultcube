@@ -1,14 +1,14 @@
 # Ideally, you can override these parameters directly via the commandline, or by
 # creating a seperate 'Makefile_local' file (this way, your changes aren't
-# accidentally commited to the AssaultCube repository).
+# accidentally commited to the Dune Strike repository).
 
-# AssaultCube now uses clang++ as a compiler, as there have been random crashes
+# Dune Strike now uses clang++ as a compiler, as there have been random crashes
 # found to have been caused by the g++ compiler in the past. This seems to have
 # been fixed now by relaxing the optimization that g++ does, so although we'll
 # continue using clang++ (just in case), you can use g++ if you prefer.
 CXX=clang++
 
-# call like 'DEBUGBUILD=1 make' to compile a debug version of AssaultCube.
+# call like 'DEBUGBUILD=1 make' to compile a debug version of Dune Strike.
 ifdef DEBUGBUILD
     ACDEBUG=yes
 else
@@ -117,8 +117,8 @@ CLIENT_OBJS= \
 	bot/bot_ai.o \
 	bot/bot_util.o \
 	bot/bot_waypoint.o \
-	bot/ac_bot.o \
-	bot/ac_bot_ai.o
+	bot/ds_bot.o \
+	bot/ds_bot_ai.o
 
 CLIENT_PCH= cube.h.gch
 
@@ -166,7 +166,7 @@ clean-enet: ../enet/Makefile
 	$(MAKE) -C ../enet/ clean
 
 clean:
-	-$(RM) $(CLIENT_PCH) $(CLIENT_OBJS) $(SERVER_OBJS) $(MASTER_OBJS) ac_client ac_server ac_master
+	-$(RM) $(CLIENT_PCH) $(CLIENT_OBJS) $(SERVER_OBJS) $(MASTER_OBJS) dunestrike_client dunestrike_server dunestrike_master ac_client ac_server ac_master
 
 mrproper: clean ../enet/Makefile
 	$(MAKE) -C ../enet/ distclean
@@ -189,37 +189,37 @@ $(filter-out $(SERVER_OBJS),$(MASTER_OBJS)): CXXFLAGS += $(SERVER_INCLUDES)
 
 ifneq (,$(findstring MINGW,$(PLATFORM)))
 client: $(CLIENT_OBJS)
-	$(WINDRES) -I ../vcpp -i ../vcpp/assaultcube.rc -J rc -o ../vcpp/assaultcube.res -O coff
-	$(CXX) $(CXXFLAGS) -o ../../bin_win32/ac_client.exe ../vcpp/assaultcube.res $(CLIENT_OBJS) $(CLIENT_LIBS)
+	$(WINDRES) -I ../vcpp -i ../vcpp/dunestrike.rc -J rc -o ../vcpp/dunestrike.res -O coff
+	$(CXX) $(CXXFLAGS) -o ../../bin_win32/dunestrike_client.exe ../vcpp/dunestrike.res $(CLIENT_OBJS) $(CLIENT_LIBS)
 
 server: $(SERVER_OBJS)
-	$(CXX) $(CXXFLAGS) -o ../../bin_win32/ac_server.exe $(SERVER_OBJS) $(SERVER_LIBS)
+	$(CXX) $(CXXFLAGS) -o ../../bin_win32/dunestrike_server.exe $(SERVER_OBJS) $(SERVER_LIBS)
 
 master: $(MASTER_OBJS)
-	$(CXX) $(CXXFLAGS) -o ../../bin_win32/ac_master.exe $(MASTER_OBJS) $(SERVER_LIBS)
+	$(CXX) $(CXXFLAGS) -o ../../bin_win32/dunestrike_master.exe $(MASTER_OBJS) $(SERVER_LIBS)
 
 client_install: client
 server_install: server
 
 else
 client: libenet $(CLIENT_OBJS)
-	$(CXX) $(CXXFLAGS) -o ac_client $(CLIENT_OBJS) $(CLIENT_LIBS)
+	$(CXX) $(CXXFLAGS) -o dunestrike_client $(CLIENT_OBJS) $(CLIENT_LIBS)
 
 server: libenet $(SERVER_OBJS)
-	$(CXX) $(CXXFLAGS) -o ac_server $(SERVER_OBJS) $(SERVER_LIBS)
+	$(CXX) $(CXXFLAGS) -o dunestrike_server $(SERVER_OBJS) $(SERVER_LIBS)
 master: libenet $(MASTER_OBJS)
-	$(CXX) $(CXXFLAGS) -o ac_master $(MASTER_OBJS) $(SERVER_LIBS)
+	$(CXX) $(CXXFLAGS) -o dunestrike_master $(MASTER_OBJS) $(SERVER_LIBS)
 
 client_install: client
 	install -d ../../bin_unix/
-	install -m755 ac_client ../../bin_unix/$(PLATFORM_PREFIX)_client
+	install -m755 dunestrike_client ../../bin_unix/dunestrike_client
 #ifneq (,$(STRIP))
 #	$(STRIP) ../../bin_unix/$(PLATFORM_PREFIX)_client
 #endif
 
 server_install: server
 	install -d ../../bin_unix/
-	install -m755 ac_server ../../bin_unix/$(PLATFORM_PREFIX)_server
+	install -m755 dunestrike_server ../../bin_unix/dunestrike_server
 #ifneq (,$(STRIP))
 #	$(STRIP) ../../bin_unix/$(PLATFORM_PREFIX)_server
 #endif
@@ -247,15 +247,15 @@ autodownload.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 autodownload.o: protos.h
 client.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 client.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
-client.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h bot/ac_bot.h
+client.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h bot/ds_bot.h
 clientgame.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 clientgame.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 clientgame.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h
-clientgame.o: bot/ac_bot.h
+clientgame.o: bot/ds_bot.h
 clients2c.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 clients2c.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 clients2c.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h
-clients2c.o: bot/ac_bot.h
+clients2c.o: bot/ds_bot.h
 command.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 command.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 command.o: protos.h
@@ -299,7 +299,7 @@ rendercubes.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 rendercubes.o: protos.h
 rendergl.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 rendergl.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
-rendergl.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h bot/ac_bot.h
+rendergl.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h bot/ds_bot.h
 renderhud.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 renderhud.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 renderhud.o: protos.h
@@ -349,14 +349,14 @@ water.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h weapon.h
 water.o: entity.h world.h command.h varray.h vote.h console.h protos.h
 weapon.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 weapon.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
-weapon.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h bot/ac_bot.h
+weapon.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h bot/ds_bot.h
 weapon.o: hudgun.h
 wizard.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 wizard.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 wizard.o: protos.h
 world.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h weapon.h
 world.o: entity.h world.h command.h varray.h vote.h console.h protos.h
-world.o: bot/bot.h bot/bot_util.h bot/bot_waypoint.h bot/ac_bot.h
+world.o: bot/bot.h bot/bot_util.h bot/bot_waypoint.h bot/ds_bot.h
 worldio.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 worldio.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 worldio.o: protos.h
@@ -373,31 +373,31 @@ zip.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h weapon.h
 zip.o: entity.h world.h command.h varray.h vote.h console.h protos.h
 bot/bot.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 bot/bot.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
-bot/bot.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h bot/ac_bot.h
+bot/bot.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h bot/ds_bot.h
 bot/botmanager.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 bot/botmanager.o: weapon.h entity.h world.h command.h varray.h vote.h
 bot/botmanager.o: console.h protos.h bot/bot.h bot/bot_util.h
-bot/botmanager.o: bot/bot_waypoint.h bot/ac_bot.h
+bot/botmanager.o: bot/bot_waypoint.h bot/ds_bot.h
 bot/bot_ai.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 bot/bot_ai.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 bot/bot_ai.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h
-bot/bot_ai.o: bot/ac_bot.h
+bot/bot_ai.o: bot/ds_bot.h
 bot/bot_util.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
 bot/bot_util.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
 bot/bot_util.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h
-bot/bot_util.o: bot/ac_bot.h
+bot/bot_util.o: bot/ds_bot.h
 bot/bot_waypoint.o: cube.h platform.h tools.h geom.h model.h protocol.h
 bot/bot_waypoint.o: sound.h weapon.h entity.h world.h command.h varray.h
 bot/bot_waypoint.o: vote.h console.h protos.h bot/bot.h bot/bot_util.h
-bot/bot_waypoint.o: bot/bot_waypoint.h bot/ac_bot.h
-bot/ac_bot.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
-bot/ac_bot.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
-bot/ac_bot.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h
-bot/ac_bot.o: bot/ac_bot.h
-bot/ac_bot_ai.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
-bot/ac_bot_ai.o: weapon.h entity.h world.h command.h varray.h vote.h
-bot/ac_bot_ai.o: console.h protos.h bot/bot.h bot/bot_util.h
-bot/ac_bot_ai.o: bot/bot_waypoint.h bot/ac_bot.h
+bot/bot_waypoint.o: bot/bot_waypoint.h bot/ds_bot.h
+bot/ds_bot.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
+bot/ds_bot.o: weapon.h entity.h world.h command.h varray.h vote.h console.h
+bot/ds_bot.o: protos.h bot/bot.h bot/bot_util.h bot/bot_waypoint.h
+bot/ds_bot.o: bot/ds_bot.h
+bot/ds_bot_ai.o: cube.h platform.h tools.h geom.h model.h protocol.h sound.h
+bot/ds_bot_ai.o: weapon.h entity.h world.h command.h varray.h vote.h
+bot/ds_bot_ai.o: console.h protos.h bot/bot.h bot/bot_util.h
+bot/ds_bot_ai.o: bot/bot_waypoint.h bot/ds_bot.h
 
 cube.h.gch: platform.h tools.h geom.h model.h protocol.h sound.h weapon.h
 cube.h.gch: entity.h world.h command.h varray.h vote.h console.h protos.h

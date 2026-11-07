@@ -1331,7 +1331,7 @@ void retrieveservers(vector<char> &data)
         if(h.set_host(mastername))
         {
             formatstring(progresstext)("retrieving servers from %s:%d... (esc to abort)", mastername, masterport);
-            defformatstring(url)("/retrieve.do?action=list&name=%s&version=%d&build=%d", urlencode(player1->name, true), AC_VERSION, getbuildtype()|(1<<16));
+            defformatstring(url)("/retrieve.do?action=list&name=%s&version=%d&build=%d", urlencode(player1->name, true), DS_VERSION, getbuildtype()|(1<<16));
             h.outvec = (vector<uchar> *) &data; // ouch...
             show_out_of_renderloop_progress(0, progresstext);
             int got = h.get(url, RETRIEVELIMIT, RETRIEVELIMIT);
@@ -1355,7 +1355,7 @@ void retrieveservers(vector<char> &data)
         defformatstring(text)("retrieving servers from %s:%d... (esc to abort)", mastername, masterport);
         show_out_of_renderloop_progress(0, text);
         int starttime = SDL_GetTicks(), timeout = 0;
-        defformatstring(request)("list %s %d %d\n", player1->name, AC_VERSION, getbuildtype());
+        defformatstring(request)("list %s %d %d\n", player1->name, DS_VERSION, getbuildtype());
         const char *req = request;
         int reqlen = strlen(req);
         ENetBuffer buf;
@@ -1410,7 +1410,7 @@ void updatefrommaster(int *force)
     vector<char> data;
     retrieveservers(data);
 
-    if(data.empty()) conoutf("Master server is not replying. \f1Get more information at http://masterserver.cubers.net/");
+    if(data.empty()) conoutf("Master server is not replying. This build is intended for LAN play.");
     else
     {
         // preserve currently connected server from deletion

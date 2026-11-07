@@ -3,20 +3,20 @@
 //
 // Description:
 //
-// Header specific for AC_CUBE
+// Header specific for DS_CUBE
 //
 // Author:  Rick <rickhelmus@gmail.com>
 //
 //
 //
 
-#ifndef AC_BOT_H
-#define AC_BOT_H
+#ifndef DS_BOT_H
+#define DS_BOT_H
 
 //#define BOTDEBUG
 #define MAX_WEAPONS      9 // NUM_GUNS
 
-class CACBot: public CBot
+class CDuneBot: public CBot
 {
 public:
      friend class CBotManager;

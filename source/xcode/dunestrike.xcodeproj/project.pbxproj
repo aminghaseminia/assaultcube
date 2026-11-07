@@ -34,8 +34,8 @@
 		9EB8172111ED9AEF00799589 /* Vorbis.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9EB8171911ED9AEF00799589 /* Vorbis.framework */; };
 		9EB8179511ED9EDF00799589 /* Ogg.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9EB8171411ED9AEF00799589 /* Ogg.framework */; };
 		9EB8179A11ED9EDF00799589 /* Vorbis.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9EB8171911ED9AEF00799589 /* Vorbis.framework */; };
-		9EB8181D11EDA56D00799589 /* assaultcube.icns in Resources */ = {isa = PBXBuildFile; fileRef = 9EB817DE11EDA3A300799589 /* assaultcube.icns */; };
-		9EB8188511EDACDB00799589 /* assaultcube.icns in Resources */ = {isa = PBXBuildFile; fileRef = 9EB817DE11EDA3A300799589 /* assaultcube.icns */; };
+		9EB8181D11EDA56D00799589 /* dunestrike.icns in Resources */ = {isa = PBXBuildFile; fileRef = 9EB817DE11EDA3A300799589 /* dunestrike.icns */; };
+		9EB8188511EDACDB00799589 /* dunestrike.icns in Resources */ = {isa = PBXBuildFile; fileRef = 9EB817DE11EDA3A300799589 /* dunestrike.icns */; };
 		9EB8188611EDACDB00799589 /* Help.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 66899EA80C14887F00927C34 /* Help.tiff */; };
 		9EB8188811EDACDB00799589 /* Main.gif in Resources */ = {isa = PBXBuildFile; fileRef = 66899EAA0C14887F00927C34 /* Main.gif */; };
 		9EB8188911EDACDB00799589 /* map.icns in Resources */ = {isa = PBXBuildFile; fileRef = B975E7F30EBCC3A200880D5D /* map.icns */; };
@@ -159,8 +159,8 @@
 		9EB8171511ED9AEF00799589 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		9EB8171611ED9AEF00799589 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
 		9EB8171911ED9AEF00799589 /* Vorbis.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Vorbis.framework; path = Frameworks/Vorbis.framework; sourceTree = "<group>"; };
-		9EB817DE11EDA3A300799589 /* assaultcube.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = assaultcube.icns; sourceTree = "<group>"; };
-		9EB8183711EDA6EE00799589 /* assaultcube.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = assaultcube.plist; sourceTree = "<group>"; };
+		9EB817DE11EDA3A300799589 /* dunestrike.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = dunestrike.icns; sourceTree = "<group>"; };
+		9EB8183711EDA6EE00799589 /* dunestrike.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = dunestrike.plist; sourceTree = "<group>"; };
 		9EB8183811EDA6EE00799589 /* launcher.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = launcher.plist; sourceTree = "<group>"; };
 		9EFB9B6E12634B1600FCE687 /* jpegenc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jpegenc.h; sourceTree = "<group>"; };
 		B2F67ED704C74A3F00A80002 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -238,7 +238,7 @@
 		B914CE8B11CAC42F009BA307 /* worldocull.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = worldocull.cpp; sourceTree = "<group>"; };
 		B914CE8C11CAC42F009BA307 /* worldrender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = worldrender.cpp; sourceTree = "<group>"; };
 		B914CE8D11CAC42F009BA307 /* zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = zip.cpp; sourceTree = "<group>"; };
-		B94198CB09207E810029DAD1 /* assaultcube.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = assaultcube.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B94198CB09207E810029DAD1 /* dunestrike.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dunestrike.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B96D0D4C092096F200B6C936 /* launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = launcher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B96D0D570920970C00B6C936 /* Launcher.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Launcher.h; sourceTree = "<group>"; };
 		B96D0D580920970C00B6C936 /* Launcher.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = Launcher.m; sourceTree = "<group>"; };
@@ -312,13 +312,13 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B94198CB09207E810029DAD1 /* assaultcube.app */,
+				B94198CB09207E810029DAD1 /* dunestrike.app */,
 				B96D0D4C092096F200B6C936 /* launcher.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA /* assaultcube */ = {
+		29B97314FDCFA39411CA2CEA /* dunestrike */ = {
 			isa = PBXGroup;
 			children = (
 				080E96DDFE201D6D7F000001 /* Classes */,
@@ -327,7 +327,7 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
-			name = assaultcube;
+			name = dunestrike;
 			sourceTree = "<group>";
 		};
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
@@ -342,8 +342,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				9EB817DE11EDA3A300799589 /* assaultcube.icns */,
-				9EB8183711EDA6EE00799589 /* assaultcube.plist */,
+				9EB817DE11EDA3A300799589 /* dunestrike.icns */,
+				9EB8183711EDA6EE00799589 /* dunestrike.plist */,
 				66899EA80C14887F00927C34 /* Help.tiff */,
 				66899EA90C14887F00927C34 /* Keys.gif */,
 				9EB8183811EDA6EE00799589 /* launcher.plist */,
@@ -489,9 +489,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B941988A09207E810029DAD1 /* assaultcube */ = {
+		B941988A09207E810029DAD1 /* dunestrike */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B94198C609207E810029DAD1 /* Build configuration list for PBXNativeTarget "assaultcube" */;
+			buildConfigurationList = B94198C609207E810029DAD1 /* Build configuration list for PBXNativeTarget "dunestrike" */;
 			buildPhases = (
 				B94198A409207E810029DAD1 /* Resources */,
 				B94198A709207E810029DAD1 /* Sources */,
@@ -504,10 +504,10 @@
 			dependencies = (
 				B96D0D790920980E00B6C936 /* PBXTargetDependency */,
 			);
-			name = assaultcube;
+			name = dunestrike;
 			productInstallPath = "$(HOME)/Applications";
-			productName = assaultcube;
-			productReference = B94198CB09207E810029DAD1 /* assaultcube.app */;
+			productName = dunestrike;
+			productReference = B94198CB09207E810029DAD1 /* dunestrike.app */;
 			productType = "com.apple.product-type.application";
 		};
 		B96D0D4B092096F200B6C936 /* launcher */ = {
@@ -535,7 +535,7 @@
 			attributes = {
 				LastUpgradeCheck = 0420;
 			};
-			buildConfigurationList = B960CF35085F3CC7004FB142 /* Build configuration list for PBXProject "assaultcube" */;
+			buildConfigurationList = B960CF35085F3CC7004FB142 /* Build configuration list for PBXProject "dunestrike" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -545,11 +545,11 @@
 				French,
 				German,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA /* assaultcube */;
+			mainGroup = 29B97314FDCFA39411CA2CEA /* dunestrike */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B941988A09207E810029DAD1 /* assaultcube */,
+				B941988A09207E810029DAD1 /* dunestrike */,
 				B96D0D4B092096F200B6C936 /* launcher */,
 			);
 		};
@@ -560,7 +560,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9EB8181D11EDA56D00799589 /* assaultcube.icns in Resources */,
+				9EB8181D11EDA56D00799589 /* dunestrike.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -568,7 +568,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9EB8188511EDACDB00799589 /* assaultcube.icns in Resources */,
+				9EB8188511EDACDB00799589 /* dunestrike.icns in Resources */,
 				9EB8188611EDACDB00799589 /* Help.tiff in Resources */,
 				9EB8188811EDACDB00799589 /* Main.gif in Resources */,
 				B96D0D630920971300B6C936 /* MainMenu.nib in Resources */,
@@ -596,7 +596,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "echo \"TargetBuildDir $TARGET_BUILD_DIR\"\ncd $TARGET_BUILD_DIR\n\n#ensure old package is gone\nrm -f assaultcube.dmg\n\n#make the directory which our disk image will be made of\n#use /tmp as a destination because copying ourself (xcode folder) whilst compiling causes the dog to chase its tail\nACPKG=`mktemp -d /tmp/acpkg.XXXXXX` || exit 1\n\necho \"TempDir: $ACPKG\"\n\n#leave indicator of where temp directory is in case things break\nln -sf $ACPKG $BUILT_PRODUCTS_DIR/acpkg\n\n#copy launcher\ncp -RL $BUILT_PRODUCTS_DIR/launcher.app $ACPKG/AssaultCube.app\n\nHELPDIR=$ACPKG/AssaultCube.app/Contents/Resources/help/\nGAMEDIR=$ACPKG/AssaultCube.app/Contents/gamedata\nmkdir -p $GAMEDIR\nmkdir -p $HELPDIR\n\n#copy assaultcube\ncp -RL $BUILT_PRODUCTS_DIR/assaultcube.app $GAMEDIR/\nstrip -u -r \"$GAMEDIR/assaultcube.app/Contents/MacOS/assaultcube\"\n\n#copy readme and data and remove unneccesary stuff\ncp -RL $SRCROOT/../../README.html $HELPDIR/\n#cp -RL $SRCROOT/../../changelog.txt $HELPDIR/\ncp -RL $SRCROOT/../../docs $HELPDIR/\ncp -RL $SRCROOT/../../bot $GAMEDIR/\ncp -RL $SRCROOT/../../config $GAMEDIR/\ncp -RL $SRCROOT/../../demos $GAMEDIR/\ncp -RL $SRCROOT/../../mods $GAMEDIR/\ncp -RL $SRCROOT/../../packages $GAMEDIR/\n#mkdir $GAMEDIR/screenshots\n\n#create config template\ncd $GAMEDIR/config\nzip configtemplates.zip autoexec.cfg favourites.cfg pcksources.cfg\n\n#clean up\nrm -rf $GAMEDIR/.git\nrm -f $GAMEDIR/.gitattributes\nrm -f $GAMEDIR/.travis.yml\nfind -d $ACPKG -name \".gitignore\" -exec rm -rf {} \\;\nrm -rf $HELPDIR/docs/autogen/\nfind $ACPKG -name \".DS_Store\" -exec rm -f {} \\;\n\nfind -d $ACPKG -name \"shadows.dat\" -exec rm -rf {} \\;\nrm -f autoexec.cfg favourites.cfg pcksources.cfg init*.cfg saved*.cfg servervita*.cfg servers.cfg history\nrm -f $GAMEDIR/clientlog*.txt\nrm -f $GAMEDIR/packages/maps/*.cgz\nrm -f $GAMEDIR/packages/maps/*.cfg\nrm -f $GAMEDIR/packages/maps/servermaps/incoming/*.cgz\nrm -f $GAMEDIR/packages/maps/servermaps/incoming/*.cfg\nrm -f `(find -d $GAMEDIR/demos -type f | grep -v \"tutorial_demo.dmo\")`\n                             \n#/Developer/Tools/CpMac -r $SRCROOT/../../source $ACPKG/sourcecode\n#rm -rf $ACPKG/sourcecode/xcode/build\n#rm -rf $ACPKG/sourcecode/xcode/DerivedData\n#rm -rf $ACPKG/sourcecode/xcode/Frameworks/*\n#rm -rf $ACPKG/sourcecode/vcpp\n\ncd $TARGET_BUILD_DIR\n\n#add alias to readme\n/usr/bin/osascript <<EOT\ntell application \"Finder\"\nset macSrcPath to POSIX file \"$HELPDIR/README.html\" as text\nset macDestPath to POSIX file \"$ACPKG\" as text\nmake new alias file to file macSrcPath at folder macDestPath\nend tell\nEOT\n\n#finally make a disk image out of the stuff\nhdiutil create -srcfolder $ACPKG -volname assaultcube assaultcube.dmg\nhdiutil internet-enable -yes assaultcube.dmg\n\n#cleanup\n#rm -rf $ACPKG\n";
+			shellScript = "echo \"TargetBuildDir $TARGET_BUILD_DIR\"\ncd $TARGET_BUILD_DIR\n\n#ensure old package is gone\nrm -f dunestrike.dmg\n\n#make the directory which our disk image will be made of\n#use /tmp as a destination because copying ourself (xcode folder) whilst compiling causes the dog to chase its tail\nACPKG=`mktemp -d /tmp/acpkg.XXXXXX` || exit 1\n\necho \"TempDir: $ACPKG\"\n\n#leave indicator of where temp directory is in case things break\nln -sf $ACPKG $BUILT_PRODUCTS_DIR/acpkg\n\n#copy launcher\ncp -RL $BUILT_PRODUCTS_DIR/launcher.app $ACPKG/dunestrike.app\n\nHELPDIR=$ACPKG/dunestrike.app/Contents/Resources/help/\nGAMEDIR=$ACPKG/dunestrike.app/Contents/gamedata\nmkdir -p $GAMEDIR\nmkdir -p $HELPDIR\n\n#copy dunestrike\ncp -RL $BUILT_PRODUCTS_DIR/dunestrike.app $GAMEDIR/\nstrip -u -r \"$GAMEDIR/dunestrike.app/Contents/MacOS/dunestrike\"\n\n#copy readme and data and remove unneccesary stuff\ncp -RL $SRCROOT/../../README.html $HELPDIR/\n#cp -RL $SRCROOT/../../changelog.txt $HELPDIR/\ncp -RL $SRCROOT/../../docs $HELPDIR/\ncp -RL $SRCROOT/../../bot $GAMEDIR/\ncp -RL $SRCROOT/../../config $GAMEDIR/\ncp -RL $SRCROOT/../../demos $GAMEDIR/\ncp -RL $SRCROOT/../../mods $GAMEDIR/\ncp -RL $SRCROOT/../../packages $GAMEDIR/\n#mkdir $GAMEDIR/screenshots\n\n#create config template\ncd $GAMEDIR/config\nzip configtemplates.zip autoexec.cfg favourites.cfg pcksources.cfg\n\n#clean up\nrm -rf $GAMEDIR/.git\nrm -f $GAMEDIR/.gitattributes\nrm -f $GAMEDIR/.travis.yml\nfind -d $ACPKG -name \".gitignore\" -exec rm -rf {} \\;\nrm -rf $HELPDIR/docs/autogen/\nfind $ACPKG -name \".DS_Store\" -exec rm -f {} \\;\n\nfind -d $ACPKG -name \"shadows.dat\" -exec rm -rf {} \\;\nrm -f autoexec.cfg favourites.cfg pcksources.cfg init*.cfg saved*.cfg servervita*.cfg servers.cfg history\nrm -f $GAMEDIR/clientlog*.txt\nrm -f $GAMEDIR/packages/maps/*.cgz\nrm -f $GAMEDIR/packages/maps/*.cfg\nrm -f $GAMEDIR/packages/maps/servermaps/incoming/*.cgz\nrm -f $GAMEDIR/packages/maps/servermaps/incoming/*.cfg\nrm -f `(find -d $GAMEDIR/demos -type f | grep -v \"tutorial_demo.dmo\")`\n                             \n#/Developer/Tools/CpMac -r $SRCROOT/../../source $ACPKG/sourcecode\n#rm -rf $ACPKG/sourcecode/xcode/build\n#rm -rf $ACPKG/sourcecode/xcode/DerivedData\n#rm -rf $ACPKG/sourcecode/xcode/Frameworks/*\n#rm -rf $ACPKG/sourcecode/vcpp\n\ncd $TARGET_BUILD_DIR\n\n#add alias to readme\n/usr/bin/osascript <<EOT\ntell application \"Finder\"\nset macSrcPath to POSIX file \"$HELPDIR/README.html\" as text\nset macDestPath to POSIX file \"$ACPKG\" as text\nmake new alias file to file macSrcPath at folder macDestPath\nend tell\nEOT\n\n#finally make a disk image out of the stuff\nhdiutil create -srcfolder $ACPKG -volname dunestrike dunestrike.dmg\nhdiutil internet-enable -yes dunestrike.dmg\n\n#cleanup\n#rm -rf $ACPKG\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -748,7 +748,7 @@
 					../enet/include,
 					../include/,
 				);
-				INFOPLIST_FILE = assaultcube.plist;
+				INFOPLIST_FILE = dunestrike.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -757,7 +757,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_LDFLAGS = "-lz";
-				PRODUCT_NAME = assaultcube;
+				PRODUCT_NAME = dunestrike;
 				SDKROOT = macosx;
 				STRIP_STYLE = all;
 			};
@@ -792,7 +792,7 @@
 					../enet/include,
 					../include/,
 				);
-				INFOPLIST_FILE = assaultcube.plist;
+				INFOPLIST_FILE = dunestrike.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -801,7 +801,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_LDFLAGS = "-lz";
-				PRODUCT_NAME = assaultcube;
+				PRODUCT_NAME = dunestrike;
 				SDKROOT = macosx;
 				STRIP_STYLE = all;
 			};
@@ -841,7 +841,7 @@
 					../enet/include,
 					../include/,
 				);
-				INFOPLIST_FILE = assaultcube.plist;
+				INFOPLIST_FILE = dunestrike.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -850,7 +850,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_LDFLAGS = "-lz";
-				PRODUCT_NAME = assaultcube;
+				PRODUCT_NAME = dunestrike;
 				SDKROOT = macosx;
 				STRIP_STYLE = all;
 			};
@@ -1014,7 +1014,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B94198C609207E810029DAD1 /* Build configuration list for PBXNativeTarget "assaultcube" */ = {
+		B94198C609207E810029DAD1 /* Build configuration list for PBXNativeTarget "dunestrike" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B94198C709207E810029DAD1 /* Debug */,
@@ -1024,7 +1024,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		B960CF35085F3CC7004FB142 /* Build configuration list for PBXProject "assaultcube" */ = {
+		B960CF35085F3CC7004FB142 /* Build configuration list for PBXProject "dunestrike" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B960CF36085F3CC7004FB142 /* Debug */,

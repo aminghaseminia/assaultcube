@@ -1,4 +1,4 @@
-Tips for compiling AssaultCube in Visual Studio:
+Tips for compiling Dune Strike in Visual Studio:
 
 1. Install Visual C++ Redistributable for used version of Visual Studio.
 

@@ -17,7 +17,7 @@ void cleanup(char *msg)         // single program exit point;
     if(msg)
     {
         #ifdef WIN32
-        MessageBox(NULL, msg, "AssaultCube fatal error", MB_OK|MB_SYSTEMMODAL|MB_ICONERROR);
+        MessageBox(NULL, msg, "Dune Strike fatal error", MB_OK|MB_SYSTEMMODAL|MB_ICONERROR);
         #else
         printf("%s", msg);
         #endif
@@ -333,7 +333,7 @@ int save_png(const char *filename, SDL_Surface *image)
     f->seek(0, SEEK_END);
     f->putbig<uint>(crc);
 
-    writepngchunk(f, "tEXt", "\123o\165rc\145\0\101ss\141" "\165\154\164\103\165\142\145", 18);
+    writepngchunk(f, "tEXt", "Source\0Dune Strike", 18);
     writepngchunk(f, "tEXt", scores - 8, strlen(scores) + 8);
     writepngchunk(f, "IEND");
 
@@ -632,7 +632,7 @@ void setupscreen(int &useddepthbits, int &usedfsaa)
             SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, config&4 ? fsaa : 0);
         }
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-        screen = SDL_CreateWindow("AssaultCube",
+        screen = SDL_CreateWindow("Dune Strike",
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             winw, winh,
             SDL_WINDOW_OPENGL | flags);
@@ -1099,11 +1099,11 @@ void createconfigtemplates(const char *templatezip)  // create customisable conf
     findfile(AUTOSTARTPATH "dummy", "w"); // create empty autostart directory, if it doesn't exist yet
 }
 
-void connectprotocol(char *protocolstring) // assaultcube://example.org[:28763][/][?[port=28763][&password=secret]]
+void connectprotocol(char *protocolstring) // dunestrike://example.org[:28763][/][?[port=28763][&password=secret]]
 {
     urlparse u;
     u.set(protocolstring);
-    if(strcmp(u.scheme, "assaultcube") || !*u.domain) { conoutf("\f3bad commandline syntax (\"%s\")", protocolstring); return; }
+    if(strcmp(u.scheme, "dunestrike") || !*u.domain) { conoutf("\f3bad commandline syntax (\"%s\")", protocolstring); return; }
     if(*u.userpassword) clientlogf(" ignoring user:password part of url (%s)", u.userpassword);
     if(*u.fragment) clientlogf(" ignoring fragment part of url (%s)", u.fragment);
     if(*u.path) clientlogf(" ignoring path part of url (%s)", u.path);
@@ -1292,7 +1292,7 @@ int main(int argc, char **argv)
                     }
                     else if(!strcmp(argv[i], "--version"))
                     {
-                        printf("%.3f\n", AC_VERSION/1000.0f);
+                        printf("%.3f\n", DS_VERSION/1000.0f);
                         quitdirectly = true;
                     }
                     else if(!strcmp(argv[i], "--protocol"))
@@ -1321,7 +1321,7 @@ int main(int argc, char **argv)
                 case 'e': initscript = &argv[i][2]; break;
                 default:  conoutf("\f3unknown commandline option: -%c", argv[i][1]);
             }
-            else if(!strncmp(argv[i], "assaultcube://", 14)) // browser direct connection
+            else if(!strncmp(argv[i], "dunestrike://", 14)) // browser direct connection
             {
                 waitforauth = true;
                 conoutf("\fUwill \f2connect\fU when authenticated."); // individual notification - usually first in console, so off screen when menu pops up
@@ -1366,7 +1366,7 @@ int main(int argc, char **argv)
 
     initserver(dedicated);  // never returns if dedicated
 
-    initlog("world (" STRINGIFY(AC_VERSION) ")");
+    initlog("world (" STRINGIFY(DS_VERSION) ")");
     empty_world(7, true);
 
     initlog("video: sdl");
@@ -1384,7 +1384,7 @@ int main(int argc, char **argv)
 #endif
 
 #ifdef __APPLE__
-    // Fix https://github.com/assaultcube/AC/issues/300
+    // Fix https://github.com/dunestrike/AC/issues/300
     SDL_SetHintWithPriority(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1", SDL_HINT_OVERRIDE);
 #endif
 
@@ -1395,7 +1395,7 @@ int main(int argc, char **argv)
     gl_init(screenw, screenh, useddepthbits, usedfsaa);
 
     notexture = noworldtexture = textureload("packages/misc/notexture.jpg");
-    if(!notexture) fatal("could not find core textures (hint: run AssaultCube from the parent of the bin directory)");
+    if(!notexture) fatal("could not find core textures (hint: run Dune Strike from the parent of the bin directory)");
 
     initlog("console");
     updateigraphs();
@@ -1612,5 +1612,5 @@ int main(int argc, char **argv)
 #endif
 }
 
-VAR(version, 1, AC_VERSION, 0);
+VAR(version, 1, DS_VERSION, 0);
 VAR(protocol, 1, PROTOCOL_VERSION, 0);

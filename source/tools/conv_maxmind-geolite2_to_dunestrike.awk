@@ -1,4 +1,4 @@
-# convert Geolite2 lists for Assaultcube servers
+# convert Geolite2 lists for Dune Strike servers
 # 
 # expects to process GeoLite2-Country-Locations-en.csv and GeoLite2-Country-Blocks-IPv4.csv (in that order)
 #

@@ -1,5 +1,5 @@
 //
-// C++ Implementation: ac_bot_ai
+// C++ Implementation: ds_bot_ai
 //
 // Description: The AI part of the bot for ac is here(navigation, shooting etc)
 //
@@ -28,9 +28,9 @@ weaponinfo_s WeaponInfoTable[MAX_WEAPONS] =
     { TYPE_AUTO,       0.0f,   50.0f,   3.0f,   50.0f,   0 }  // AKIMBO
 };
 
-// Code of CACBot - Start
+// Code of CDuneBot - Start
 
-bool CACBot::ChoosePreferredWeapon()
+bool CDuneBot::ChoosePreferredWeapon()
 {
     short bestWeapon = m_pMyEnt->gunselect;
     short bestWeaponScore = 0;
@@ -128,12 +128,12 @@ bool CACBot::ChoosePreferredWeapon()
     return true;
 };
 
-void CACBot::Reload(int Gun)
+void CDuneBot::Reload(int Gun)
 {
 
 };
 
-entity *CACBot::SearchForEnts(bool bUseWPs, float flRange, float flMaxHeight)
+entity *CDuneBot::SearchForEnts(bool bUseWPs, float flRange, float flMaxHeight)
 {
     /* Entities are scored on the following things:
         - Visibility
@@ -279,7 +279,7 @@ entity *CACBot::SearchForEnts(bool bUseWPs, float flRange, float flMaxHeight)
     return pNewTargetEnt;
 }
 
-bool CACBot::HeadToTargetEnt()
+bool CDuneBot::HeadToTargetEnt()
 {
     if (m_pTargetEnt)
     {
@@ -347,9 +347,9 @@ bool CACBot::HeadToTargetEnt()
     return false;
 }
 
-bool CACBot::DoSPStuff()
+bool CDuneBot::DoSPStuff()
 {
     return false;
 }
 
-// Code of CACBot - End
+// Code of CDuneBot - End

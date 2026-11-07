@@ -6,11 +6,11 @@
 
   You may be able to redistribute this content under specific
   conditions. Please read the licensing information, available
-  at https://assault.cubers.net/docs/license.html for the
+  at https://github.com/aminghaseminia/dunestrike/docs/license.html for the
   conditions that would apply to what you may be redistributing.
 -->
 
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:t="https://assault.cubers.net/docs/xml">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:t="https://github.com/aminghaseminia/dunestrike/docs/xml">
 
   <xsl:output method="text" encoding="ASCII"/>
   
@@ -25,7 +25,7 @@
   </xsl:variable>
 
   <xsl:template match="/t:cuberef">
-    <xsl:text>// This CubeScript file has been automatically generated from AssaultCube's ./docs/reference.xml</xsl:text>
+    <xsl:text>// This CubeScript file has been automatically generated from Dune Strike's ./docs/reference.xml</xsl:text>
     <xsl:value-of select="$newline"/>
     <xsl:text>// DO NOT MODIFY THIS FILE - Instead, modify ./docs/reference.xml and generate this file automatically.</xsl:text>
     <xsl:value-of select="$newline"/>

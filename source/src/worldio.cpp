@@ -741,7 +741,7 @@ void save_world(char *mname, bool skipoptimise, bool addcomfort)
     }
 
     // update (and fix) map header
-    memcpy(hdr.head, "ACMP", 4); // ensure map now declares itself as an AssaultCube map, even if imported as CUBE
+    memcpy(hdr.head, "ACMP", 4); // ensure map now declares itself as an Dune Strike map, even if imported as CUBE
     hdr.version = MAPVERSION;
     hdr.headersize = sizeof(header);
     hdr.timestamp = (int) time(NULL);
@@ -851,7 +851,7 @@ void save_world9(char *mname)
     backup(cgzname, bakname);
     stream *f = opengzfile(cgzname, "wb");
     if(!f) { conoutf("could not write map to %s", cgzname); return; }
-    memcpy(hdr.head, "ACMP", 4); // ensure map now declares itself as an AssaultCube map, even if imported as CUBE
+    memcpy(hdr.head, "ACMP", 4); // ensure map now declares itself as an Dune Strike map, even if imported as CUBE
     hdr.version = 9;
     hdr.headersize = sizeof(header);
     hdr.timestamp = (int) time(NULL); // non-zero timestamps in format 9 can be used to identify "exported" maps
@@ -955,7 +955,7 @@ int load_world(char *mname)        // still supports all map formats that have e
     if(f->read(&tmp, sizeof_baseheader) != sizeof_baseheader ||
        (strncmp(tmp.head, "CUBE", 4)!=0 && strncmp(tmp.head, "ACMP",4)!=0)) { conoutf("\f3while reading map: header malformatted (1)"); delete f; return -3; }
     lilswap(&tmp.version, 4); // version, headersize, sfactor, numents
-    if(tmp.version > MAPVERSION) { conoutf("\f3this map requires a newer version of AssaultCube"); delete f; return -4; }
+    if(tmp.version > MAPVERSION) { conoutf("\f3this map requires a newer version of Dune Strike"); delete f; return -4; }
     if(tmp.sfactor<SMALLEST_FACTOR || tmp.sfactor>LARGEST_FACTOR || tmp.numents > MAXENTITIES) { conoutf("\f3illegal map size"); delete f; return -5; }
     tmp.headersize = fixmapheadersize(tmp.version, tmp.headersize);
     int restofhead = min(tmp.headersize, sizeof_header) - sizeof_baseheader;

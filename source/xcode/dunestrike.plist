@@ -5,15 +5,19 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>assaultcube</string>
+	<string>dunestrike</string>
 	<key>CFBundleIconFile</key>
-	<string>assaultcube</string>
+	<string>dunestrike</string>
 	<key>CFBundleIdentifier</key>
-	<string>net.cubers</string>
+	<string>com.dunestrike.game</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+	<key>CFBundleName</key>
+	<string>Dune Strike</string>
+	<key>CFBundleDisplayName</key>
+	<string>Dune Strike</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>

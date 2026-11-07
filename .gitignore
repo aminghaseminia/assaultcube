@@ -1,8 +1,9 @@
-.travis.yml
 *.o
 *.lo
 shadows.dat
+bin_unix/dunestrike_client
 bin_unix/native_client
+bin_unix/dunestrike_server
 bin_unix/native_server
 config/authpreprivate.cfg
 config/authprivate.cfg
@@ -20,8 +21,8 @@ packages/maps/*.cgz
 !packages/maps/new_content.cgz
 !packages/maps/dev_*.cgz
 packages/misc/checksums_md5.txt
-source/codeblocks/AssaultCube.layout
-source/codeblocks/AssaultCube_Linux.layout
+source/codeblocks/DuneStrike.layout
+source/codeblocks/DuneStrike_Linux.layout
 source/enet/.deps/
 source/enet/.libs/
 source/enet/Makefile
@@ -31,7 +32,9 @@ source/enet/config.status
 source/enet/libenet.la
 source/enet/libenet.pc
 source/enet/libtool
+source/src/dunestrike_client
 source/src/ac_client
+source/src/dunestrike_server
 source/src/ac_server
 source/src/cube.h.gch
 source/src/Makefile_local

@@ -778,7 +778,7 @@ static const ge25519_aff ge25519_base_multiples_affine[425] = {
 #include "ge25519_base.data"
 };
 
-#ifndef AC_NOALIASING
+#ifndef DS_NOALIASING
 static void p1p1_to_p2_(ge25519_p3 *r, const ge25519_p1p1 *p)          // to avoid errors because of aliasing
 {
   fe25519_mul(&r->x, &p->x, &p->t);
@@ -796,7 +796,7 @@ static void p1p1_to_p2(ge25519_p2 *r, const ge25519_p1p1 *p)
 
 static void p1p1_to_p3(ge25519_p3 *r, const ge25519_p1p1 *p)
 {
-#ifndef AC_NOALIASING
+#ifndef DS_NOALIASING
   p1p1_to_p2_(r, p);
 #else
   p1p1_to_p2((ge25519_p2 *)r, p);
@@ -1015,7 +1015,7 @@ void ge25519_double_scalarmult_vartime(ge25519_p3 *r, const ge25519_p3 *p1, cons
   for(i=125;i>=0;i--)
   {
     dbl_p1p1(&tp1p1, (ge25519_p2 *)r);
-#ifndef AC_NOALIASING
+#ifndef DS_NOALIASING
     p1p1_to_p2_(r, &tp1p1);
 #else
     p1p1_to_p2((ge25519_p2 *) r, &tp1p1);
@@ -1026,7 +1026,7 @@ void ge25519_double_scalarmult_vartime(ge25519_p3 *r, const ge25519_p3 *p1, cons
       p1p1_to_p3(r, &tp1p1);
       add_p1p1(&tp1p1, r, &pre[b[i]]);
     }
-#ifndef AC_NOALIASING
+#ifndef DS_NOALIASING
     if(i != 0) p1p1_to_p2_(r, &tp1p1);
 #else
     if(i != 0) p1p1_to_p2((ge25519_p2 *)r, &tp1p1);

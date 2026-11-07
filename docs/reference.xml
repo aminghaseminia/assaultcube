@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  To turn this XML document into a "docs.cfg" that can be read by the AssaultCube engine, simply
+  To turn this XML document into a "docs.cfg" that can be read by the Dune Strike engine, simply
   uncomment the below xml-stylesheet. Then comment the xml-stylesheet below that one. Save your changes.
   Then refresh this XML document in your web browser and copy/paste the output into ./config/docs.cfg
   If you are using Firefox and you encounter any CORS-related errors try this configuration change -> https://stackoverflow.com/a/18495435
@@ -15,7 +15,7 @@
 
 <!--
   You may be able to redistribute this content under specific conditions.
-  Please read the licensing information, available @ https://assault.cubers.net/docs/license.html for the
+  Please read the licensing information, available @ https://github.com/aminghaseminia/dunestrike/docs/license.html for the
   conditions that would apply to what you may be redistributing.
 
 -->
@@ -63,8 +63,8 @@
 -->
 
 
-<cuberef xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://assault.cubers.net/docs/xml"
-name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuberef.xsd">
+<cuberef xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://github.com/aminghaseminia/dunestrike/docs/xml"
+name="Dune Strike Documentation" version="Current" xsi:schemaLocation="xml/cuberef.xsd">
   <sections sort="true">
   <!--
     Sections available: Cubescript, General, Gameplay, Game modes, Keyboard and mouse, Visuals, Heads-Up Display, Sound,
@@ -2009,7 +2009,7 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
         <command name="execdir">
           <description>Executes all commands in all config files in the specified directory.</description>
           <arguments>
-            <argument token="s" description="the directory path from the assaultcube root"/>
+            <argument token="s" description="the directory path from the dunestrike root"/>
           </arguments>
           <examples>
             <example>
@@ -2336,7 +2336,7 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
         <command name="resetpckservers">
           <description>Resets the list of packages source servers where to download custom content from.</description>
           <remarks>
-            <remark>Restart AssaultCube to take the effect.</remark>
+            <remark>Restart Dune Strike to take the effect.</remark>
           </remarks>
           <references>
             <identifierReference identifier="addpckserver"/>
@@ -7967,7 +7967,7 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
             <remark>Compare the usage inside config/menus.cfg</remark>
           </remarks>
           <arguments>
-            <argument token="P" description="the directory path from the assaultcube root"/>
+            <argument token="P" description="the directory path from the dunestrike root"/>
             <argument token="E" description="file extension"/>
             <argument token="A" description="action"/>
             <argument token="I" description="show image from a file" valueNotes="0 or 1"/>
@@ -8717,7 +8717,7 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
         </command>
 
         <variable name="maxfps">
-          <description>Limits the FPS (frames per second) of AssaultCube's video output.</description>
+          <description>Limits the FPS (frames per second) of Dune Strike's video output.</description>
           <remarks>
             <remark>Remark: limit to '200' is optimal.</remark>
           </remarks>
@@ -8781,7 +8781,7 @@ name="AssaultCube Documentation" version="Current" xsi:schemaLocation="xml/cuber
         </variable>
 
         <command name="font">
-          <description>Loads a font texture to use as text within AssaultCube.</description>
+          <description>Loads a font texture to use as text within Dune Strike.</description>
           <arguments>
             <argument token="NAME" description="the font name"/>
             <argument token="PATH" description="the path to the font texture"/>

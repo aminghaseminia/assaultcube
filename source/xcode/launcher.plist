@@ -14,7 +14,7 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>map.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>AssaultCube demo</string>
+			<string>Dune Strike demo</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSTypeIsPackage</key>
@@ -30,7 +30,7 @@
 			<key>CFBundleTypeIconFile</key>
 			<string>map.icns</string>
 			<key>CFBundleTypeName</key>
-			<string>AssaultCube map</string>
+			<string>Dune Strike map</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSTypeIsPackage</key>
@@ -39,12 +39,16 @@
 			<string>Binary</string>
 		</dict>
 	</array>
+	<key>CFBundleName</key>
+	<string>Dune Strike</string>
+	<key>CFBundleDisplayName</key>
+	<string>Dune Strike</string>
 	<key>CFBundleExecutable</key>
 	<string>launcher</string>
 	<key>CFBundleIconFile</key>
-	<string>assaultcube</string>
+	<string>dunestrike</string>
 	<key>CFBundleIdentifier</key>
-	<string>assaultcube</string>
+	<string>com.dunestrike.launcher</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
@@ -57,10 +61,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>AssaultCubeServer</string>
+			<string>Dune StrikeServer</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>assaultcube</string>
+				<string>dunestrike</string>
 			</array>
 		</dict>
 	</array>

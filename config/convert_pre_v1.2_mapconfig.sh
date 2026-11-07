@@ -13,7 +13,7 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ] || [ "$1" = "" ]; then
   echo "Usage: "$0" MAP_CONFIG_FILE(S)"
   echo "This script will make a backup of specified map CFG files (into their existing"
   echo "directory), then using SED it will modify the original map CFG file to be"
-  echo "compatible with the new packaging layout for AssaultCube."
+  echo "compatible with the new packaging layout for Dune Strike."
   echo ""
   echo "It is suggested not to use this script twice on a file, as it may duplicate the"
   echo "changes which could cause many errors."

@@ -11,7 +11,7 @@
 #PATHTOACDEV=$(dirname $(cd ../ && pwd))
 # Please ensure this path is NOT inside your "ACDIR" folder, as
 # this will be the place the tarball package gets saved.
-SAVETARBALLPATH=~/AssaultCube
+SAVETARBALLPATH=~/DuneStrike
 # This will be the directory that gets packaged:
 ACDIR=$SAVETARBALLPATH/AC
 ACDIRTESTING=$SAVETARBALLPATH/AC_testing
@@ -53,10 +53,10 @@ tar -zxf "$ACDIR/$NEWACTAG.tar.gz" -C "$ACDIRTESTING"
 rm -r "$ACDIR/$NEWACTAG.tar.gz"
 
 # Use new, "portable" profile in "$ACDIRTESTING":
-sed -i 's/--home=.*\s/--home=profile /' $ACDIRTESTING/assaultcube.sh
+sed -i 's/--home=.*\s/--home=profile /' $ACDIRTESTING/dunestrike.sh
 
 # Get documentation files from latest remote release tag:
-svn export --force https://github.com/assaultcube/assaultcube.github.io/tags/$NEWACTAG/htdocs/docs/ $ACDOCSDIR
+svn export --force https://github.com/dunestrike/dunestrike.github.io/tags/$NEWACTAG/htdocs/docs/ $ACDOCSDIR
 
 # Start of the script, so remind the user of things we can't check:
 echo -e "\033[1mIf required, did you patch the source with any relevant materials?\033[0m"
@@ -71,21 +71,21 @@ read DUMMY
 echo -e "\033[1mDid you generate fresh config/mapmodelattributes.cfg (/loadallmapmodels)?\033[0m"
 echo " * If so, press ENTER to continue, otherwise press ctrl+c to exit."
 read DUMMY
-echo -e "\033[1mIs the save-path in assaultcube.sh correct?\033[0m"
+echo -e "\033[1mIs the save-path in dunestrike.sh correct?\033[0m"
 echo " * If so, press ENTER to continue, otherwise press ctrl+c to exit."
 read DUMMY
 echo -e "\033[1mHave you checked all following variables in this script are set correctly?\033[0m"
 echo -e " * The packages created by this script will be saved to this folder:\n    $SAVETARBALLPATH"
-echo -e " * The absolute-path to your AssaultCube directory is set as:\n    $ACDIR"
-echo -e " * The absolute-path to your AssaultCube \"docs\" directory is set as:\n    $ACDOCSDIR"
-echo -e " * Your new AssaultCube version will become:\n    $NEWACVERSION\n"
+echo -e " * The absolute-path to your Dune Strike directory is set as:\n    $ACDIR"
+echo -e " * The absolute-path to your Dune Strike \"docs\" directory is set as:\n    $ACDOCSDIR"
+echo -e " * Your new Dune Strike version will become:\n    $NEWACVERSION\n"
 echo -e "\033[1mIf these are correct, press ENTER to continue, otherwise press ctrl+c to exit.\033[0m"
 read DUMMY
 
 # Still at the start of the script, so find user-errors that we can check:
 # Checking "$ACDIR" is set correctly:
 if [ -e $ACDIR/source/src/main.cpp ]; then
-  echo "Stated path to AssaultCube contains \"source/src/main.cpp\""
+  echo "Stated path to Dune Strike contains \"source/src/main.cpp\""
   echo "Hopefully this means the path is correct and contained files are good."
   echo -e "Proceeding to the next step...\n"
 else
@@ -96,7 +96,7 @@ fi
 
 # Checking "$ACDOCSDIR" is set correctly:
 if [ -e $ACDOCSDIR/reference.xml ]; then
-  echo "Stated path to AssaultCube's documentation contains \"reference.xml\""
+  echo "Stated path to Dune Strike's documentation contains \"reference.xml\""
   echo "Hopefully this means the path is correct and contained files are good."
   echo -e "Proceeding to the next step...\n"
 else
@@ -185,7 +185,7 @@ until [ -f ./misc/gib01/shadows.dat ] \
   && [ -f ./weapons/sniper/world/shadows.dat ] \
   && [ -f ./weapons/subgun/world/shadows.dat ]; do
     echo -e "\033[1;31mERROR:\033[0m Some shadows.dat files are missing."
-    echo "Please run AssaultCube to generate these files."
+    echo "Please run Dune Strike to generate these files."
     read DUMMY
 done
 echo "All known shadows.dat files exist."
@@ -234,7 +234,7 @@ cd $ACDIR/source/enet && make distclean
 cd ../src && make clean
 rm -f init*.cfg saved*.cfg servervita*.cfg servers.cfg history
 rm -f ./clientlog*.txt
-rm -f ./bin_unix/native_*
+rm -f ./bin_unix/dunestrike_*
 rm -f ./bin_unix/ac_*
 rm -f ./packages/maps/dev_*.cgz
 rm -f ./packages/maps/dev_*.cfg
@@ -258,11 +258,11 @@ sh $ACDIR/source/dev_tools/generate_md5_checksums.sh
 # Create the linux tarball:
 echo "\n... Creating the Linux tarball..."
 cd $SAVETARBALLPATH
-if [ -d "AssaultCube_v$NEWACVERSION" ]; then
-  rm -r "AssaultCube_v$NEWACVERSION"
+if [ -d "DuneStrike_v$NEWACVERSION" ]; then
+  rm -r "DuneStrike_v$NEWACVERSION"
 fi
-mv $ACDIRFOLDERNAME AssaultCube_v$NEWACVERSION
-tar cjvf $SAVETARBALLPATH/AssaultCube_v$NEWACVERSION.tar.bz2 \
+mv $ACDIRFOLDERNAME DuneStrike_v$NEWACVERSION
+tar cjvf $SAVETARBALLPATH/DuneStrike_v$NEWACVERSION.tar.bz2 \
   --exclude=".*" \
   --exclude=*.bat \
   --exclude=*bin_win32* \
@@ -270,11 +270,11 @@ tar cjvf $SAVETARBALLPATH/AssaultCube_v$NEWACVERSION.tar.bz2 \
   --exclude="*source/lib*" \
   --exclude=*vcpp* \
   --exclude=*xcode* \
-  --exclude=*AssaultCube.cbp \
+  --exclude=*DuneStrike.cbp \
   --exclude=*autoexec.cfg \
   --exclude=*favourites.cfg \
   --exclude=*pcksources.cfg \
   --exclude=*new_content.cfg \
   --exclude=*new_content.cgz \
   --exclude-vcs \
-  AssaultCube_v$NEWACVERSION/
+  DuneStrike_v$NEWACVERSION/

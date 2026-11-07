@@ -1139,7 +1139,7 @@ extern void enddemoplayback();
 
 // logging
 
-enum { ACLOG_DEBUG = 0, ACLOG_VERBOSE, ACLOG_INFO, ACLOG_WARNING, ACLOG_ERROR, ACLOG_NUM };
+enum { DSLOG_DEBUG = 0, DSLOG_VERBOSE, DSLOG_INFO, DSLOG_WARNING, DSLOG_ERROR, DSLOG_NUM };
 
 extern bool initlogging(const char *identity, int facility_, int consolethres, int filethres, int syslogthres, bool logtimestamp, const char *logfilepath);
 extern void exitlogging();
@@ -1195,7 +1195,7 @@ struct servercommandline
 
     bool checkarg(const char *arg)
     {
-        if(!strncmp(arg, "assaultcube://", 13)) return false;
+        if(!strncmp(arg, "dunestrike://", 13)) return false;
         else if(arg[0] != '-' || arg[1] == '\0') return false;
         const char *a = arg + 2 + strspn(arg + 2, " ");
         int ai = atoi(a);
@@ -1211,7 +1211,7 @@ struct servercommandline
                 loopi(strlen(a)){ if(a[i]!='A') allas = false; }
                 if(allas)
                 {
-                    printf("KEY FAILURE: you provided the (inacceptable) example private key.\nKEY FAILURE: generate your own - read: https://assault.cubers.net/docs/server.html\n");
+                    printf("KEY FAILURE: you provided the (inacceptable) example private key.\nKEY FAILURE: generate your own - read: https://github.com/aminghaseminia/dunestrike/docs/server.html\n");
                 }
                 else
                 {
@@ -1223,7 +1223,7 @@ struct servercommandline
                     if(!strncmp(arg, "--masterport=", 13))
                     {
                         int ai = atoi(arg+13);
-                        masterport = ai == 0 ? AC_MASTER_PORT : ai;
+                        masterport = ai == 0 ? DS_MASTER_PORT : ai;
                     }
                     else return false;
                     break;

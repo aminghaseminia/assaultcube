@@ -1,4 +1,4 @@
-// wizard to start an AssaultCube server and storing the configuration
+// wizard to start an Dune Strike server and storing the configuration
 
 #include "cube.h"
 
@@ -56,13 +56,12 @@ int wizardmain(int argc, char **argv)
     if(!outfile || !relpath)
     {
         printf("invalid arguments specified!\n");
-        printf("usage: ac_server <outfile> <relbinarypath>\n");
+        printf("usage: dunestrike_server <outfile> <relbinarypath>\n");
         return EXIT_FAILURE;
     }
 
-    printf("The AssaultCube Server Wizard\n\n");
-    printf("Before setting up a new server, please ensure you've read the rules at:\n"
-           "\thttp://masterserver.cubers.net/rules.html\n\n");
+    printf("The Dune Strike Server Wizard\n\n");
+    printf("This build is intended for LAN play.\n\n");
     printf("You will also need to ensure that the UDP port you choose is open.\n"
            "Whatever port you choose, you will need to forward that port, plus one port after that.\n"
            "If you're having issues, use and forward the default ports 28763 and 28764\n"
@@ -70,7 +69,7 @@ int wizardmain(int argc, char **argv)
     printf("Now to specify some optional settings for your server.\n"
            "The default settings will be used if you leave the fields blank.\n"
            "If you're unsure about what to specify for the settings, leave the field blank.\n\n"
-           "Read http://assault.cubers.net/docs/commandline.html for a description of these settings.\n\n");
+           "Read http://github.com/aminghaseminia/dunestrike/docs/commandline.html for a description of these settings.\n\n");
 
     vector<char> argstr;
     readarg(argstr, "Server description", "-n");

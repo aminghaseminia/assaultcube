@@ -9,7 +9,7 @@
 #define CLIENTIPCENSOR 12               // blank out the last 12 bits of client's IPs before telling them to others (compromise between "16" from AC 0.9x and "8" from AC 1.1)
 #define PROTOCOL_VERSION 1300           // bump when protocol changes (use negative numbers for mods!)
 #define DEMO_VERSION 2                  // bump when demo format changes
-#define DEMO_MAGIC "ASSAULTCUBE_DEMO"
+#define DEMO_MAGIC "DUNESTRIKE_DEMO"
 #define DEMO_MINTIME 10000              // don't keep demo recordings with less than 10 seconds
 #define MAXMAPNAMELEN 31
 #define MAXMAPSENDSIZE 65536

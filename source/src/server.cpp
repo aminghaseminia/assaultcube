@@ -161,7 +161,7 @@ bool pushvitasforsaving(bool forceupdate = false)
                 }
                 else too_old++;
             });
-            if(too_old) mlog(ACLOG_VERBOSE, "omitted %d vitas from autosave (exceeding maxage of %d months)", too_old, vitamaxage);
+            if(too_old) mlog(DSLOG_VERBOSE, "omitted %d vitas from autosave (exceeding maxage of %d months)", too_old, vitamaxage);
             if(forceupdate && readserverconfigsthread_sem) readserverconfigsthread_sem->post();
         }
         return true;
@@ -184,7 +184,7 @@ void poll_serverthreads()       // called once per mainloop-timeslice
             if(startnewservermapsepoch || readmapsthread_sem->getvalue()) fatal("thread management mishap");  // zero tolerance...
 
             // wake readmapsthread
-            mlog(ACLOG_DEBUG,"waking readmapsthread");
+            mlog(DSLOG_DEBUG,"waking readmapsthread");
             startnewservermapsepoch = true;
             servclock = (int) (time(NULL) / (time_t) 60);
             readmapsthread_sem->post();
@@ -205,14 +205,14 @@ void poll_serverthreads()       // called once per mainloop-timeslice
                     {
                         if(!strcmp(servermaps[i]->fname, fresh->fname))   // we don't check paths here - map filenames have to be unique
                         {  // found map of same name
-                            mlog(ACLOG_VERBOSE,"marked servermap %s%s for deletion", servermaps[i]->fpath, servermaps[i]->fname);
+                            mlog(DSLOG_VERBOSE,"marked servermap %s%s for deletion", servermaps[i]->fpath, servermaps[i]->fname);
                             servermapstodelete.add(servermaps.remove(i)); // mark old version for deletion
                         }
                     }
                     if(fresh->isok)
                     {
                         servermaps.add(fresh);
-                        mlog(servmillis>2345?ACLOG_INFO:ACLOG_VERBOSE,"added servermap %s%s", fresh->fpath, fresh->fname); // 1st time only in VERBOSE
+                        mlog(servmillis>2345?DSLOG_INFO:DSLOG_VERBOSE,"added servermap %s%s", fresh->fpath, fresh->fname); // 1st time only in VERBOSE
                         maprot.initmap(fresh, NULL);
                         servermaps.sort(servermapsortname); // keep list sorted at all times
                     }
@@ -224,7 +224,7 @@ void poll_serverthreads()       // called once per mainloop-timeslice
             else if(!startnewservermapsepoch)
             {
                 // readmapsthread is done
-                if(servmillis<2000)mlog(ACLOG_INFO,"added %d servermaps",servermaps.length());
+                if(servmillis<2000)mlog(DSLOG_INFO,"added %d servermaps",servermaps.length());
                 while(!readmapsthread_sem->trywait())
                     ;
                 stage++;
@@ -252,7 +252,7 @@ void poll_serverthreads()       // called once per mainloop-timeslice
                 {
                     if(vitaupdatebuf)
                     {
-                        mlog(ACLOG_INFO, "read/updated %d vitas from %s", parsevitas(vitaupdatebuf, vitaupdatebuflen), vitafilename_update_backup);;
+                        mlog(DSLOG_INFO, "read/updated %d vitas from %s", parsevitas(vitaupdatebuf, vitaupdatebuflen), vitafilename_update_backup);;
                         DELETEA(vitaupdatebuf);
                     }
                     stage++;
@@ -856,8 +856,8 @@ demo_s *initdemoslot() // fetch empty demo slot, clean up surplus slots
             if(oldestage >= 0)
             {
                 demo_s &c = demos[oldestdemo];
-                mlog(ACLOG_VERBOSE, "dropping demo #%d \"%s\", age %d", c.sequence, c.info, oldestage);
-                if(!c.done) mlog(ACLOG_ERROR, "clearing unfinished demo slot #%d, probably leaked some memory...", c.sequence);
+                mlog(DSLOG_VERBOSE, "dropping demo #%d \"%s\", age %d", c.sequence, c.info, oldestage);
+                if(!c.done) mlog(DSLOG_ERROR, "clearing unfinished demo slot #%d, probably leaked some memory...", c.sequence);
                 else DELETEA(c.data);
                 c.rb = NULL;
                 c.db = NULL;
@@ -891,7 +891,7 @@ demo_s *initdemoslot() // fetch empty demo slot, clean up surplus slots
         tryagain = false;
         loopi(MAXDEMOS) if(demos[i].sequence == d->sequence && demos + i != d) tryagain = true;
     }
-    if(demo_debug) mlog(ACLOG_INFO, "initdemoslot(): use slot %d, sequence #%d", n, d->sequence);
+    if(demo_debug) mlog(DSLOG_INFO, "initdemoslot(): use slot %d, sequence #%d", n, d->sequence);
     return d;
 }
 
@@ -913,7 +913,7 @@ int demoworkerthread(void *logfileprefix) // demo worker thread: compress demo d
             }
             if(s.finish && s.gz && s.rb && !s.rb->length())
             { // close and copy zip file
-                if(demo_debug) tlog(ACLOG_INFO, "demoworkerthread(): close slot %d, sequence #%d", i, s.sequence);
+                if(demo_debug) tlog(DSLOG_INFO, "demoworkerthread(): close slot %d, sequence #%d", i, s.sequence);
                 tigerhash_finish(s.tiger, s.tigerstate);
                 s.tigerstate = NULL;
                 string msg;
@@ -937,19 +937,19 @@ int demoworkerthread(void *logfileprefix) // demo worker thread: compress demo d
                     {
                         int wlen = (int) demo->write(s.data, s.len);
                         delete demo;
-                        tlog(ACLOG_INFO, "demo #%d written to file \"%s\" (%d bytes)", s.sequence, s.filename, wlen);
+                        tlog(DSLOG_INFO, "demo #%d written to file \"%s\" (%d bytes)", s.sequence, s.filename, wlen);
                     }
                     else
                     {
-                        tlog(ACLOG_INFO, "failed to write demo #%d to file \"%s\"", s.sequence, s.filename);
+                        tlog(DSLOG_INFO, "failed to write demo #%d to file \"%s\"", s.sequence, s.filename);
                     }
                 }
-                else tlog(ACLOG_INFO, "recording demo #%d \"%s\" (%d bytes) finished, not saved to file", s.sequence, s.filename, s.len);
+                else tlog(DSLOG_INFO, "recording demo #%d \"%s\" (%d bytes) finished, not saved to file", s.sequence, s.filename, s.len);
                 s.done = true;
             }
             if(s.finish || s.error || s.remove)
             { // cleanup demo slot
-                if(demo_debug) tlog(ACLOG_INFO, "demoworkerthread(): cleanup slot %d, sequence #%d", i, s.sequence);
+                if(demo_debug) tlog(DSLOG_INFO, "demoworkerthread(): cleanup slot %d, sequence #%d", i, s.sequence);
                 if(s.error || s.remove) s.done = false;
                 DELETEP(s.gz);
                 DELETEP(s.dbs);
@@ -992,7 +992,7 @@ void writedemo(int chan, void *data, int len)
     }
     else
     {
-        if(!demorecord->error) mlog(ACLOG_ERROR, "demorecord ringbuffer overflow -> discarding demo #%d", demorecord->sequence);
+        if(!demorecord->error) mlog(DSLOG_ERROR, "demorecord ringbuffer overflow -> discarding demo #%d", demorecord->sequence);
         demorecord->error = true;  // ringbuffer-overflow: discard demo
     }
 }
@@ -1016,7 +1016,7 @@ void demorecord_beginintermission()
     memcpy(interm_tiger, demorecord->tiger, TIGERHASHSIZE);
     demorecord->tigerstate = tigerhash_init(demorecord->tiger); // start again to hash the rest of the demo
 
-    if(demo_debug) mlog(ACLOG_INFO, "demorecord_beginintermission(): sequence #%d", demorecord->sequence);
+    if(demo_debug) mlog(DSLOG_INFO, "demorecord_beginintermission(): sequence #%d", demorecord->sequence);
     sendf(-1, 1, "rim", SV_DEMOCHECKSUM, TIGERHASHSIZE, interm_tiger);
 }
 
@@ -1025,10 +1025,10 @@ void enddemorecord()
     if(!demorecord) return;
     sg->recordpackets = false;
 
-    if(demo_debug) mlog(ACLOG_INFO, "enddemorecord(): sequence #%d", demorecord->sequence);
+    if(demo_debug) mlog(DSLOG_INFO, "enddemorecord(): sequence #%d", demorecord->sequence);
     if(sg->gamemillis < DEMO_MINTIME)
     {
-        mlog(ACLOG_INFO, "Demo #%d discarded.", demorecord->sequence);
+        mlog(DSLOG_INFO, "Demo #%d discarded.", demorecord->sequence);
         demorecord->remove = true;
     }
     else
@@ -1040,7 +1040,7 @@ void enddemorecord()
         defformatstring(info)("%s, %.2fMB", demorecord->info, (len + 10000) / (1024*1024.f));
         defformatstring(msg)("Demo #%d \"%s\" recorded\nPress F10 to download it from the server..", demorecord->sequence, info);
         sendservmsgverbose(msg);
-        mlog(ACLOG_INFO, "Demo \"%s\" recorded.", info);
+        mlog(DSLOG_INFO, "Demo \"%s\" recorded.", info);
 
         copystring(demorecord->mapname, behindpath(sg->smapname));
         demorecord->gmode = gamemode;
@@ -1070,7 +1070,7 @@ void setupdemorecord()
     formatstring(demorecord->info)("%s %s", modestr(gamemode), sg->smapname);
 
     sendservmsgverbose("recording demo");
-    mlog(ACLOG_INFO, "Demo recording started (#%d).", demorecord->sequence);
+    mlog(DSLOG_INFO, "Demo recording started (#%d).", demorecord->sequence);
 
     sg->recordpackets = false;
 
@@ -1100,7 +1100,7 @@ void setupdemorecord()
     packetbuf p(MAXTRANS, ENET_PACKET_FLAG_RELIABLE);
     welcomepacket(p, -1);
     writedemo(1, p.buf, p.len);
-    if(demo_debug) mlog(ACLOG_INFO, "setupdemorecord(): sequence #%d, %s on %s", demorecord->sequence, modestr(gamemode, false), behindpath(sg->smapname));
+    if(demo_debug) mlog(DSLOG_INFO, "setupdemorecord(): sequence #%d, %s on %s", demorecord->sequence, modestr(gamemode, false), behindpath(sg->smapname));
 }
 
 int donedemosort(demo_s **a, demo_s **b) { return (*a)->timestamp - (*b)->timestamp; }
@@ -1255,8 +1255,8 @@ void setupdemoplayback()
     {
         lilswap(&hdr.version, 1);
         lilswap(&hdr.protocol, 1);
-        if(hdr.version!=DEMO_VERSION) formatstring(msg)("demo \"%s\" requires an %s version of AssaultCube", file, hdr.version<DEMO_VERSION ? "older" : "newer");
-        else if(hdr.protocol != PROTOCOL_VERSION && !(hdr.protocol < 0 && hdr.protocol == -PROTOCOL_VERSION)) formatstring(msg)("demo \"%s\" requires an %s version of AssaultCube", file, hdr.protocol<PROTOCOL_VERSION ? "older" : "newer");
+        if(hdr.version!=DEMO_VERSION) formatstring(msg)("demo \"%s\" requires an %s version of Dune Strike", file, hdr.version<DEMO_VERSION ? "older" : "newer");
+        else if(hdr.protocol != PROTOCOL_VERSION && !(hdr.protocol < 0 && hdr.protocol == -PROTOCOL_VERSION)) formatstring(msg)("demo \"%s\" requires an %s version of Dune Strike", file, hdr.protocol<PROTOCOL_VERSION ? "older" : "newer");
         demoprotocol = hdr.protocol;
     }
     if(msg[0])
@@ -1359,7 +1359,7 @@ bool flagdistance(sflaginfo &f, int cn)
     if(pdist)
     {
         c.farpickups++;
-        mlog(ACLOG_INFO, "[%s] %s %s the %s flag at distance %.2f (%d)",
+        mlog(DSLOG_INFO, "[%s] %s %s the %s flag at distance %.2f (%d)",
                 c.hostname, c.name, (pdist==2?"tried to touch":"touched"), team_string(&f == sg->sflaginfos + 1), dist, c.farpickups);
         if (pdist==2) return false;
     }
@@ -1482,7 +1482,7 @@ void flagaction(int flag, int action, int actor)
     }
     if(abort)
     {
-        mlog(ACLOG_DEBUG,"aborting flagaction(flag %d, action %d, actor %d), reason %d, resending flag states", flag, action, actor, abort);
+        mlog(DSLOG_DEBUG,"aborting flagaction(flag %d, action %d, actor %d), reason %d, resending flag states", flag, action, actor, abort);
         sendflaginfo();
         return;
     }
@@ -1499,29 +1499,29 @@ void flagaction(int flag, int action, int actor)
         switch(message)
         {
             case FM_PICKUP:
-                mlog(ACLOG_INFO,"[%s] %s %s the flag", c.hostname, c.name, action == FA_STEAL ? "stole" : "picked up");
+                mlog(DSLOG_INFO,"[%s] %s %s the flag", c.hostname, c.name, action == FA_STEAL ? "stole" : "picked up");
                 break;
             case FM_DROP:
             case FM_LOST:
-                mlog(ACLOG_INFO,"[%s] %s %s the flag", c.hostname, c.name, message == FM_LOST ? "lost" : "dropped");
+                mlog(DSLOG_INFO,"[%s] %s %s the flag", c.hostname, c.name, message == FM_LOST ? "lost" : "dropped");
                 break;
             case FM_RETURN:
-                mlog(ACLOG_INFO,"[%s] %s returned the flag", c.hostname, c.name);
+                mlog(DSLOG_INFO,"[%s] %s returned the flag", c.hostname, c.name);
                 break;
             case FM_SCORE:
                 if(m_htf)
-                    mlog(ACLOG_INFO, "[%s] %s hunted the flag for %s, new score %d", c.hostname, c.name, team_string(c.team), c.state.flagscore);
+                    mlog(DSLOG_INFO, "[%s] %s hunted the flag for %s, new score %d", c.hostname, c.name, team_string(c.team), c.state.flagscore);
                 else
-                   mlog(ACLOG_INFO, "[%s] %s scored with the flag for %s, new score %d", c.hostname, c.name, team_string(c.team), c.state.flagscore);
+                   mlog(DSLOG_INFO, "[%s] %s scored with the flag for %s, new score %d", c.hostname, c.name, team_string(c.team), c.state.flagscore);
                 break;
             case FM_KTFSCORE:
-                mlog(ACLOG_INFO, "[%s] %s scored, carrying for %d seconds, new score %d", c.hostname, c.name, (sg->gamemillis - f.stolentime) / 1000, c.state.flagscore);
+                mlog(DSLOG_INFO, "[%s] %s scored, carrying for %d seconds, new score %d", c.hostname, c.name, (sg->gamemillis - f.stolentime) / 1000, c.state.flagscore);
                 break;
             case FM_SCOREFAIL:
-                mlog(ACLOG_INFO, "[%s] %s failed to score", c.hostname, c.name);
+                mlog(DSLOG_INFO, "[%s] %s failed to score", c.hostname, c.name);
                 break;
             default:
-                mlog(ACLOG_INFO, "flagaction %d, actor %d, flag %d, message %d", action, actor, flag, message);
+                mlog(DSLOG_INFO, "flagaction %d, actor %d, flag %d, message %d", action, actor, flag, message);
                 break;
         }
     }
@@ -1530,10 +1530,10 @@ void flagaction(int flag, int action, int actor)
         switch(message)
         {
             case FM_RESET:
-                mlog(ACLOG_INFO,"the server reset the flag for team %s", team_string(flag));
+                mlog(DSLOG_INFO,"the server reset the flag for team %s", team_string(flag));
                 break;
             default:
-                mlog(ACLOG_INFO, "flagaction %d with invalid actor cn %d, flag %d, message %d", action, actor, flag, message);
+                mlog(DSLOG_INFO, "flagaction %d with invalid actor cn %d, flag %d, message %d", action, actor, flag, message);
                 break;
         }
     }
@@ -1607,7 +1607,7 @@ void htf_forceflag(int flag)
         f.actor_cn = cl->clientnum;
         sendflaginfo(flag);
         flagmessage(flag, FM_PICKUP, cl->clientnum);
-        mlog(ACLOG_INFO,"[%s] %s got forced to pickup the flag", cl->hostname, cl->name);
+        mlog(DSLOG_INFO,"[%s] %s got forced to pickup the flag", cl->hostname, cl->name);
     }
     f.lastupdate = sg->gamemillis;
 }
@@ -1859,13 +1859,13 @@ bool serverpickup(int i, int sender)         // server side item pickup, acknowl
     const char *hn = sender >= 0 && clients[sender]->type == ST_TCPIP ? clients[sender]->hostname : NULL;
     if(!sg->sents.inrange(i))
     {
-        if(hn && !m_coop) mlog(ACLOG_INFO, "[%s] tried to pick up entity #%d - doesn't exist on this map", hn, i);
+        if(hn && !m_coop) mlog(DSLOG_INFO, "[%s] tried to pick up entity #%d - doesn't exist on this map", hn, i);
         return false;
     }
     server_entity &e = sg->sents[i];
     if(!e.spawned)
     {
-        if(!e.legalpickup && hn && !m_demo) mlog(ACLOG_INFO, "[%s] tried to pick up entity #%d (%s) - can't be picked up in this gamemode or at all", hn, i, entnames[e.type]);
+        if(!e.legalpickup && hn && !m_demo) mlog(DSLOG_INFO, "[%s] tried to pick up entity #%d (%s) - can't be picked up in this gamemode or at all", hn, i, entnames[e.type]);
         return false;
     }
     if(sender>=0)
@@ -1880,7 +1880,7 @@ bool serverpickup(int i, int sender)         // server side item pickup, acknowl
             if (pdist)
             {
                 cl->farpickups++;
-                if (!m_demo) mlog(ACLOG_INFO, "[%s] %s %s up entity #%d (%s), distance %.2f (%d)",
+                if (!m_demo) mlog(DSLOG_INFO, "[%s] %s %s up entity #%d (%s), distance %.2f (%d)",
                      cl->hostname, cl->name, (pdist==2?"tried to pick":"picked"), i, entnames[e.type], dist, cl->farpickups);
                 if (pdist==2) return false;
             }
@@ -1970,7 +1970,7 @@ void serverdamage(client *target, client *actor, int damage, int gun, bool gib, 
             actor->state.suicides++;
             actor->incrementvitacounter(VS_SUICIDES, 1);
             suic = true;
-            mlog(ACLOG_INFO, "[%s] %s suicided", actor->hostname, actor->name);
+            mlog(DSLOG_INFO, "[%s] %s suicided", actor->hostname, actor->name);
         }
         sendf(-1, 1, "ri5", gib ? SV_GIBDIED : SV_DIED, target->clientnum, actor->clientnum, actor->state.frags, gun);
         if((suic || tk) && (m_htf || m_ktf) && targethasflag >= 0)
@@ -1983,7 +1983,7 @@ void serverdamage(client *target, client *actor, int damage, int gun, bool gib, 
         target->position.setsize(0);
         ts.state = CS_DEAD;
         ts.lastdeath = sg->gamemillis;
-        if(!suic) mlog(ACLOG_INFO, "[%s] %s %s%s %s", actor->hostname, actor->name, valid_weapon(gun) ? killmessages[gib ? 1 : 0][gun] : "smurfed", tk ? " their teammate" : "", target->name);
+        if(!suic) mlog(DSLOG_INFO, "[%s] %s %s%s %s", actor->hostname, actor->name, valid_weapon(gun) ? killmessages[gib ? 1 : 0][gun] : "smurfed", tk ? " their teammate" : "", target->name);
         if(m_flags_ && targethasflag >= 0)
         {
             if(m_ctf)
@@ -2398,7 +2398,7 @@ void startgame(const char *newname, int newmode, int newtime, bool notify)
             if(notify)
             {
                 sendservmsg("server description reset to default");
-                mlog(ACLOG_INFO, "server description reset to '%s'", sg->servdesc_current);
+                mlog(DSLOG_INFO, "server description reset to '%s'", sg->servdesc_current);
             }
         }
 
@@ -2466,7 +2466,7 @@ void startgame(const char *newname, int newmode, int newtime, bool notify)
         if(sg->mastermode == MM_MATCH) concatformatstring(gsmsg, "teamsize %d, ", sg->matchteamsize);
         if(sm) concatformatstring(gsmsg, "(map rev %d/%d, %s, 'getmap' %sprepared)", sm->maprevision, sm->cgzlen, sm->getpathdesc(), sm->isdistributable() ? "" : "not ");
         else concatformatstring(gsmsg, "error: failed to preload map");
-        mlog(ACLOG_INFO, "\n%s", gsmsg);
+        mlog(DSLOG_INFO, "\n%s", gsmsg);
         if(m_arena) distributespawns();
         if(notify)
         {
@@ -2647,7 +2647,7 @@ bool svote(int sender, int vote, ENetPacket *msg) // true if the vote was placed
         sendpacket(-1, 1, msg, sender);
 
         clients[sender]->vote = vote;
-        mlog(ACLOG_DEBUG,"[%s] client %s voted %s", clients[sender]->hostname, clients[sender]->name, vote == VOTE_NO ? "no" : "yes");
+        mlog(DSLOG_DEBUG,"[%s] client %s voted %s", clients[sender]->hostname, clients[sender]->name, vote == VOTE_NO ? "no" : "yes");
         curvote->evaluate();
         return true;
     }
@@ -2661,7 +2661,7 @@ void scallvotesuc(voteinfo *v)
     clients[v->owner]->lastvotecall = servmillis;
     clients[v->owner]->nvotes--; // successful votes do not count as abuse
     sendf(v->owner, 1, "ri", SV_CALLVOTESUC);
-    mlog(ACLOG_INFO, "[%s] client %s called a vote: %s", clients[v->owner]->hostname, clients[v->owner]->name, v->action && *v->action->desc ? v->action->desc : "[unknown]");
+    mlog(DSLOG_INFO, "[%s] client %s called a vote: %s", clients[v->owner]->hostname, clients[v->owner]->name, v->action && *v->action->desc ? v->action->desc : "[unknown]");
 }
 
 void scallvoteerr(voteinfo *v, int error)
@@ -2669,7 +2669,7 @@ void scallvoteerr(voteinfo *v, int error)
     if(!valid_client(v->owner)) return;
     sendf(v->owner, 1, "ri2", SV_CALLVOTEERR, error);
     if(v->type == SA_SHUFFLETEAMS && !m_teammode) sendservmsg("\f3shuffle teams requires teammode", v->owner); // 20220119: w/o changing protocol easiest feedback about why the "invalid vote" error was raised.
-    mlog(ACLOG_INFO, "[%s] client %s failed to call a vote: %s (%s)", clients[v->owner]->hostname, clients[v->owner]->name, v->action && *v->action->desc ? v->action->desc : "[unknown]", voteerrorstr(error));
+    mlog(DSLOG_INFO, "[%s] client %s failed to call a vote: %s (%s)", clients[v->owner]->hostname, clients[v->owner]->name, v->action && *v->action->desc ? v->action->desc : "[unknown]", voteerrorstr(error));
 }
 
 bool map_queued = false;
@@ -2781,12 +2781,12 @@ void changeclientrole(int client, int role, char *pwd, bool force)
     if(role == clients[client]->role) return;
     if(role == CR_ADMIN && pwd && pwd[0] && passwords.check(clients[client]->name, pwd, clients[client]->salt, &pd) && !pd.denyadmin)
     {
-        mlog(ACLOG_INFO,"[%s] player %s used admin password in line %d", clients[client]->hostname, clients[client]->name[0] ? clients[client]->name : "[unnamed]", pd.line);
+        mlog(DSLOG_INFO,"[%s] player %s used admin password in line %d", clients[client]->hostname, clients[client]->name[0] ? clients[client]->name : "[unnamed]", pd.line);
         success = true;
     }
     if(clients[client]->checkvitadate(VS_ADMIN))
     {
-        mlog(ACLOG_INFO,"[%s] player %s claimed admin through valid vita claim (pubkey: %s)", clients[client]->hostname, clients[client]->name[0] ? clients[client]->name : "[unnamed]", clients[client]->pubkeyhex);
+        mlog(DSLOG_INFO,"[%s] player %s claimed admin through valid vita claim (pubkey: %s)", clients[client]->hostname, clients[client]->name[0] ? clients[client]->name : "[unnamed]", clients[client]->pubkeyhex);
         success = true;
     }
     if(force || role == CR_DEFAULT || success)
@@ -2797,7 +2797,7 @@ void changeclientrole(int client, int role, char *pwd, bool force)
         }
         clients[client]->role = role;
         sendserveropinfo(-1);
-        mlog(ACLOG_INFO,"[%s] set role of player %s to %s", clients[client]->hostname, clients[client]->name[0] ? clients[client]->name : "[unnamed]", role == CR_ADMIN ? "admin" : "normal player"); // flowtron : connecting players haven't got a name yet (connectadmin)
+        mlog(DSLOG_INFO,"[%s] set role of player %s to %s", clients[client]->hostname, clients[client]->name[0] ? clients[client]->name : "[unnamed]", role == CR_ADMIN ? "admin" : "normal player"); // flowtron : connecting players haven't got a name yet (connectadmin)
         if(role > CR_DEFAULT) sendiplist(client);
     }
     else if(pwd && pwd[0]) disconnect_client(client, DISC_SOPLOGINFAIL); // avoid brute-force
@@ -2845,8 +2845,8 @@ void disconnect_client(int n, int reason)
         }
     }
     int sp = (servmillis - c.connectmillis) / 1000;
-    if(reason>=0) mlog(ACLOG_INFO, "[%s] disconnecting client %s (%s) cn %d, %d seconds played%s", c.hostname, c.name, disc_reason(reason), n, sp, scoresaved);
-    else mlog(ACLOG_INFO, "[%s] disconnected client %s cn %d, %d seconds played%s", c.hostname, c.name, n, sp, scoresaved);
+    if(reason>=0) mlog(DSLOG_INFO, "[%s] disconnecting client %s (%s) cn %d, %d seconds played%s", c.hostname, c.name, disc_reason(reason), n, sp, scoresaved);
+    else mlog(DSLOG_INFO, "[%s] disconnected client %s cn %d, %d seconds played%s", c.hostname, c.name, n, sp, scoresaved);
     totalclients--;
     if(c.voiceactive)
     {
@@ -3197,7 +3197,7 @@ void process(ENetPacket *packet, int sender, int chan)
                     p.get((uchar*)sa->clientmsg, 64);
                 }
                 bool ipfail = servownip && servownip != curpeerip;
-                if(ipfail) mlog(ACLOG_INFO, "[%s] client reported different server IP %s:%d (known own IP is %s)", cl->hostname, iptoa(curpeerip, tmp1), curpeerport, iptoa(servownip, tmp2));
+                if(ipfail) mlog(DSLOG_INFO, "[%s] client reported different server IP %s:%d (known own IP is %s)", cl->hostname, iptoa(curpeerip, tmp1), curpeerport, iptoa(servownip, tmp2));
                 formatstring(text)("SERVINFOCHALLENGE<(%d) cn: %d c: %s (%s) s: %s:%d", cl->salt, sender, iptoa(cl->ip_censored, tmp1), cl->country, iptoa(servownip, tmp2), curpeerport);
                 concatformatstring(text, " %s st: %d ct: %d (%d)>", bin2hex(tmp1, spk, 32), cl->connectclock, clientclock, clientsalt);
                 sa->clientmsglen = (int)strlen(text);
@@ -3257,16 +3257,16 @@ void process(ENetPacket *packet, int sender, int chan)
             if(matchreconnect && !banned)
             { // former player reconnecting to a server in match mode
                 cl->isauthed = true;
-                mlog(ACLOG_INFO, "[%s] %s logged in (reconnect to match)%s", cl->hostname, cl->name, tags);
+                mlog(DSLOG_INFO, "[%s] %s logged in (reconnect to match)%s", cl->hostname, cl->name, tags);
             }
             else if(wl == NWL_IPFAIL || wl == NWL_PWDFAIL)
             { // nickname matches whitelist, but IP is not in the required range or PWD doesn't match
-                mlog(ACLOG_INFO, "[%s] '%s' matches nickname whitelist: wrong %s%s", cl->hostname, cl->name, wl == NWL_IPFAIL ? "IP" : "PWD", tags);
+                mlog(DSLOG_INFO, "[%s] '%s' matches nickname whitelist: wrong %s%s", cl->hostname, cl->name, wl == NWL_IPFAIL ? "IP" : "PWD", tags);
                 disconnect_client(sender, DISC_BADNICK);
             }
             else if(bl > 0)
             { // nickname matches blacklist
-                mlog(ACLOG_INFO, "[%s] '%s' matches nickname blacklist line %d%s", cl->hostname, cl->name, bl, tags);
+                mlog(DSLOG_INFO, "[%s] '%s' matches nickname blacklist line %d%s", cl->hostname, cl->name, bl, tags);
                 disconnect_client(sender, DISC_BADNICK);
             }
             else if(passwords.check(cl->name, cl->pwd, cl->salt, &pd, (cl->type==ST_TCPIP ? cl->peer->address.host : 0)) && (!pd.denyadmin || (banned && !srvfull && !srvprivate)) && bantype != BAN_MASTER) // pass admins always through
@@ -3285,7 +3285,7 @@ void process(ENetPacket *packet, int sender, int chan)
                         break;
                     }
                 }
-                mlog(ACLOG_INFO, "[%s] %s logged in using the admin password in line %d%s", cl->hostname, cl->name, pd.line, tags);
+                mlog(DSLOG_INFO, "[%s] %s logged in using the admin password in line %d%s", cl->hostname, cl->name, pd.line, tags);
             }
             else if(wantrole == CR_ADMIN && cl->checkvitadate(VS_ADMIN) && bantype != BAN_MASTER) // pass admins always through
             { // Set as admin in vita and is trying to connect as admin
@@ -3303,14 +3303,14 @@ void process(ENetPacket *packet, int sender, int chan)
                         break;
                     }
                 }
-                mlog(ACLOG_INFO, "[%s] %s logged in using the vita admin claim%s", cl->hostname, cl->name, tags);
+                mlog(DSLOG_INFO, "[%s] %s logged in using the vita admin claim%s", cl->hostname, cl->name, tags);
             }
             else if(scl.serverpassword[0] && !(srvprivate || srvfull || banned))
             { // server password required
                 if(!strcmp(genpwdhash(cl->name, scl.serverpassword, cl->salt), cl->pwd))
                 {
                     cl->isauthed = true;
-                    mlog(ACLOG_INFO, "[%s] %s client logged in (using serverpassword)%s", cl->hostname, cl->name, tags);
+                    mlog(DSLOG_INFO, "[%s] %s client logged in (using serverpassword)%s", cl->hostname, cl->name, tags);
                 }
                 else disconnect_client(sender, DISC_WRONGPW);
             }
@@ -3320,7 +3320,7 @@ void process(ENetPacket *packet, int sender, int chan)
             else
             {
                 cl->isauthed = true;
-                mlog(ACLOG_INFO, "[%s] %s logged in (default)%s", cl->hostname, cl->name, tags);
+                mlog(DSLOG_INFO, "[%s] %s logged in (default)%s", cl->hostname, cl->name, tags);
             }
         }
         if(!cl->isauthed) return;
@@ -3351,7 +3351,7 @@ void process(ENetPacket *packet, int sender, int chan)
         }
     }
 
-    if(!cl) { mlog(ACLOG_ERROR, "<NULL> client in process()"); return; }  // should never happen anyway
+    if(!cl) { mlog(DSLOG_ERROR, "<NULL> client in process()"); return; }  // should never happen anyway
 
     if(packet->flags&ENET_PACKET_FLAG_RELIABLE) reliablemessages = true;
 
@@ -3403,12 +3403,12 @@ void process(ENetPacket *packet, int sender, int chan)
                     bool canspeech = forbiddenlist.canspeech(text);
                     if(!spamdetect(cl, text) && canspeech) // team chat
                     {
-                        mlog(ACLOG_INFO, "[%s] %s%s says to team %s: '%s'", cl->hostname, type == SV_TEAMTEXTME ? "(me) " : "", cl->name, team_string(cl->team), text);
+                        mlog(DSLOG_INFO, "[%s] %s%s says to team %s: '%s'", cl->hostname, type == SV_TEAMTEXTME ? "(me) " : "", cl->name, team_string(cl->team), text);
                         sendteamtext(text, sender, type);
                     }
                     else
                     {
-                        mlog(ACLOG_INFO, "[%s] %s%s says to team %s: '%s', %s", cl->hostname, type == SV_TEAMTEXTME ? "(me) " : "",
+                        mlog(DSLOG_INFO, "[%s] %s%s says to team %s: '%s', %s", cl->hostname, type == SV_TEAMTEXTME ? "(me) " : "",
                                 cl->name, team_string(cl->team), text, canspeech ? "SPAM detected" : "Forbidden speech");
                         if (canspeech)
                         {
@@ -3437,7 +3437,7 @@ void process(ENetPacket *packet, int sender, int chan)
                     {
                         if(sg->mastermode != MM_MATCH || !sg->matchteamsize || team_isactive(cl->team) || (cl->team == TEAM_SPECT && cl->role == CR_ADMIN)) // common chat
                         {
-                            mlog(ACLOG_INFO, "[%s] %s%s says: '%s'", cl->hostname, type == SV_TEXTME ? "(me) " : "", cl->name, text);
+                            mlog(DSLOG_INFO, "[%s] %s%s says: '%s'", cl->hostname, type == SV_TEXTME ? "(me) " : "", cl->name, text);
                             if(cl->type==ST_TCPIP) while(mid1<mid2) cl->messages.add(p.buf[mid1++]);
                             QUEUE_STR(text);
                             ASSERT(SV_TEXT < 126 && SV_TEXTME < 126);
@@ -3445,13 +3445,13 @@ void process(ENetPacket *packet, int sender, int chan)
                         }
                         else // spect chat
                         {
-                            mlog(ACLOG_INFO, "[%s] %s%s says to team %s: '%s'", cl->hostname, type == SV_TEAMTEXTME ? "(me) " : "", cl->name, team_string(cl->team), text);
+                            mlog(DSLOG_INFO, "[%s] %s%s says to team %s: '%s'", cl->hostname, type == SV_TEAMTEXTME ? "(me) " : "", cl->name, team_string(cl->team), text);
                             sendteamtext(text, sender, type == SV_TEXTME ? SV_TEAMTEXTME : SV_TEAMTEXT);
                         }
                     }
                     else
                     {
-                        mlog(ACLOG_INFO, "[%s] %s%s says: '%s', %s", cl->hostname, type == SV_TEXTME ? "(me) " : "",
+                        mlog(DSLOG_INFO, "[%s] %s%s says: '%s', %s", cl->hostname, type == SV_TEXTME ? "(me) " : "",
                                 cl->name, text, canspeech ? "SPAM detected" : "Forbidden speech");
                         if (canspeech)
                         {
@@ -3483,7 +3483,7 @@ void process(ENetPacket *packet, int sender, int chan)
                     if(!spamdetect(cl, text) && canspeech)
                     {
                         bool allowed = !(sg->mastermode == MM_MATCH && cl->team != target->team) && cl->role >= roleconf('t');
-                        mlog(ACLOG_INFO, "[%s] %s says to %s: '%s' (%s)", cl->hostname, cl->name, target->name, text, allowed ? "allowed":"disallowed");
+                        mlog(DSLOG_INFO, "[%s] %s says to %s: '%s' (%s)", cl->hostname, cl->name, target->name, text, allowed ? "allowed":"disallowed");
                         if(allowed)
                         {
                             sendf(cl->clientnum, 1, "riiis", SV_TEXTPRIVATE, cl->clientnum, target->clientnum, text); // "local" echo
@@ -3492,7 +3492,7 @@ void process(ENetPacket *packet, int sender, int chan)
                     }
                     else
                     {
-                        mlog(ACLOG_INFO, "[%s] %s says to %s: '%s', %s", cl->hostname, cl->name, target->name, text, canspeech ? "SPAM detected" : "Forbidden speech");
+                        mlog(DSLOG_INFO, "[%s] %s says to %s: '%s', %s", cl->hostname, cl->name, target->name, text, canspeech ? "SPAM detected" : "Forbidden speech");
                         if (canspeech)
                         {
                             sendservmsg("\f3Please do not spam; your message was not delivered.", sender);
@@ -3556,7 +3556,7 @@ void process(ENetPacket *packet, int sender, int chan)
                 {
                     cl->voiceactive = true;
                     sendvoicestate(sender, 1);
-                    mlog(ACLOG_INFO, "voice: %s is talking", cl->name);
+                    mlog(DSLOG_INFO, "voice: %s is talking", cl->name);
                 }
                 packetbuf out(MAXTRANS);
                 putint(out, SV_VOICEDATA);
@@ -3596,7 +3596,7 @@ void process(ENetPacket *packet, int sender, int chan)
                     int sp = canspawn(cl);
                     sendf(sender, 1, "rii", SV_SPAWNDENY, sp);
                     cl->spawnperm = sp;
-                    if(cl->loggedwrongmap) mlog(ACLOG_INFO, "[%s] %s is now on the right map: revision %d/%d", cl->hostname, cl->name, rev, gzs);
+                    if(cl->loggedwrongmap) mlog(DSLOG_INFO, "[%s] %s is now on the right map: revision %d/%d", cl->hostname, cl->name, rev, gzs);
                     bool spawn = false;
                     if(team_isspect(cl->team))
                     {
@@ -3616,7 +3616,7 @@ void process(ENetPacket *packet, int sender, int chan)
                 else
                 {
                     forcedeath(cl);
-                    mlog(ACLOG_INFO, "[%s] %s is on the wrong map: revision %d/%d", cl->hostname, cl->name, rev, gzs);
+                    mlog(DSLOG_INFO, "[%s] %s is on the wrong map: revision %d/%d", cl->hostname, cl->name, rev, gzs);
                     cl->loggedwrongmap = true;
                     sendf(sender, 1, "rii", SV_SPAWNDENY, SP_WRONGMAP);
                 }
@@ -3661,7 +3661,7 @@ void process(ENetPacket *packet, int sender, int chan)
                 if(!text[0]) copystring(text, "unarmed");
                 QUEUE_STR(text);
                 bool namechanged = strcmp(cl->name, text) != 0;
-                if(namechanged) mlog(ACLOG_INFO,"[%s] %s changed name to %s", cl->hostname, cl->name, text);
+                if(namechanged) mlog(DSLOG_INFO,"[%s] %s changed name to %s", cl->hostname, cl->name, text);
                 copystring(cl->name, text, MAXNAMELEN+1);
                 if(namechanged)
                 {
@@ -3679,7 +3679,7 @@ void process(ENetPacket *packet, int sender, int chan)
                     {
                         case NWL_PWDFAIL:
                         case NWL_IPFAIL:
-                            mlog(ACLOG_INFO, "[%s] '%s' matches nickname whitelist: wrong IP/PWD", cl->hostname, cl->name);
+                            mlog(DSLOG_INFO, "[%s] '%s' matches nickname whitelist: wrong IP/PWD", cl->hostname, cl->name);
                             disconnect_client(sender, DISC_BADNICK);
                             break;
 
@@ -3688,7 +3688,7 @@ void process(ENetPacket *packet, int sender, int chan)
                             int l = nickblacklist.checkblacklist(cl->name);
                             if(l >= 0)
                             {
-                                mlog(ACLOG_INFO, "[%s] '%s' matches nickname blacklist line %d", cl->hostname, cl->name, l);
+                                mlog(DSLOG_INFO, "[%s] '%s' matches nickname blacklist line %d", cl->hostname, cl->name, l);
                                 disconnect_client(sender, DISC_BADNICK);
                             }
                             break;
@@ -3999,7 +3999,7 @@ void process(ENetPacket *packet, int sender, int chan)
                             memcpy(sg->coop_mapdata, &p.buf[p.len], mapsize + cfgsizegz);
                         }
                         incoming_size += mapsize + cfgsize;
-                        mlog(ACLOG_INFO,"[%s] %s sent map %s, rev %d, %d + %d(%d) bytes written",
+                        mlog(DSLOG_INFO,"[%s] %s sent map %s, rev %d, %d + %d(%d) bytes written",
                                     clients[sender]->hostname, clients[sender]->name, sentmap, revision, mapsize, cfgsize, cfgsizegz);
                         defformatstring(msg)("%s (%d) up%sed map %s, rev %d", clients[sender]->name, sender, !sm ? "load": "dat", sentmap, revision);
                         sendservmsg(msg);
@@ -4012,7 +4012,7 @@ void process(ENetPacket *packet, int sender, int chan)
                 }
                 if (reject)
                 {
-                    mlog(ACLOG_INFO,"[%s] %s sent map %s rev %d, rejected: %s",
+                    mlog(DSLOG_INFO,"[%s] %s sent map %s rev %d, rejected: %s",
                                 clients[sender]->hostname, clients[sender]->name, sentmap, revision, reject);
                 }
                 p.len += mapsize + cfgsizegz;
@@ -4041,7 +4041,7 @@ void process(ENetPacket *packet, int sender, int chan)
                 {
                     if(cl->isonrightmap)
                     {
-                        mlog(ACLOG_VERBOSE,"%d:%s GETMAP while on right map already.", cl->clientnum, cl->name);
+                        mlog(DSLOG_VERBOSE,"%d:%s GETMAP while on right map already.", cl->clientnum, cl->name);
                         sendservmsg("you're already on this map", cl->clientnum);
                     }
                     else
@@ -4083,11 +4083,11 @@ void process(ENetPacket *packet, int sender, int chan)
                     remove(filename);
                     defformatstring(msg)("map '%s' deleted", rmmap);
                     sendservmsg(msg, sender);
-                    mlog(ACLOG_INFO,"[%s] deleted map %s", clients[sender]->hostname, rmmap);
+                    mlog(DSLOG_INFO,"[%s] deleted map %s", clients[sender]->hostname, rmmap);
                 }
                 if (reject)
                 {
-                    mlog(ACLOG_INFO,"[%s] deleting map %s failed: %s", clients[sender]->hostname, rmmap, reject);
+                    mlog(DSLOG_INFO,"[%s] deleting map %s failed: %s", clients[sender]->hostname, rmmap, reject);
                     defformatstring(msg)("\f3can't delete map '%s', %s", rmmap, reject);
                     sendservmsg(msg, sender);
                 }
@@ -4306,7 +4306,7 @@ void process(ENetPacket *packet, int sender, int chan)
                     getstring(text, p, n);
                     if(valid_client(sender) && clients[sender]->role==CR_ADMIN)
                     {
-                        mlog(ACLOG_INFO, "[%s] %s writes to log: %s", cl->hostname, cl->name, text);
+                        mlog(DSLOG_INFO, "[%s] %s writes to log: %s", cl->hostname, cl->name, text);
                         sendservmsg("your message has been logged", sender);
                     }
                 }
@@ -4396,8 +4396,8 @@ void process(ENetPacket *packet, int sender, int chan)
                 // else if()
 
                 // in-game voice: a patched client announces itself so the server
-                // never sends voice messages to stock clients
-                else if(!strcmp(ext, "acvoice::hello"))
+                // never sends voice messages to unpatched clients
+                else if(!strcmp(ext, "dsvoice::hello"))
                 {
                     if(valid_client(sender))
                     {
@@ -4512,11 +4512,11 @@ void loggamestatus(const char *reason)
     int fragscore[2] = {0, 0}, flagscore[2] = {0, 0}, pnum[2] = {0, 0};
     string text;
     formatstring(text)("%d minutes remaining", sg->minremain);
-    mlog(ACLOG_INFO, "");
-    mlog(ACLOG_INFO, "Game status: %s on %s, %s, %s, %d clients%c %s",
+    mlog(DSLOG_INFO, "");
+    mlog(DSLOG_INFO, "Game status: %s on %s, %s, %s, %d clients%c %s",
                       modestr(gamemode), sg->smapname, reason ? reason : text, mmfullname(sg->mastermode), totalclients, sg->custom_servdesc ? ',' : '\0', sg->servdesc_current);
     if(!scl.loggamestatus) return;
-    mlog(ACLOG_INFO, "cn name             %s%s frag death %sping role    host", m_teammode ? "team " : "", m_flags_ ? "flag " : "", m_teammode ? "tk " : "");
+    mlog(DSLOG_INFO, "cn name             %s%s frag death %sping role    host", m_teammode ? "team " : "", m_flags_ ? "flag " : "", m_teammode ? "tk " : "");
     loopv(clients)
     {
         client &c = *clients[i];
@@ -4526,7 +4526,7 @@ void loggamestatus(const char *reason)
         if(m_flags_) concatformatstring(text, "%4d ", c.state.flagscore);             // flag
         concatformatstring(text, "%4d %5d", c.state.frags, c.state.deaths);          // frag death
         if(m_teammode) concatformatstring(text, " %2d", c.state.teamkills);          // tk
-        mlog(ACLOG_INFO, "%s%5d %s  %s", text, c.ping, c.role == CR_ADMIN ? "admin " : "normal", c.hostname);
+        mlog(DSLOG_INFO, "%s%5d %s  %s", text, c.ping, c.role == CR_ADMIN ? "admin " : "normal", c.hostname);
         if(c.team != TEAM_SPECT)
         {
             int t = team_base(c.team);
@@ -4545,7 +4545,7 @@ void loggamestatus(const char *reason)
                 if(m_teammode) formatstring(text)("%-4s ", team_string(sc.team, true));
                 else text[0] = '\0';
                 if(m_flags_) concatformatstring(text, "%4d ", sc.flagscore);
-                mlog(ACLOG_INFO, "   %-16s %s%4d %5d%s    - disconnected", sc.name, text, sc.frags, sc.deaths, m_teammode ? "  -" : "");
+                mlog(DSLOG_INFO, "   %-16s %s%4d %5d%s    - disconnected", sc.name, text, sc.frags, sc.deaths, m_teammode ? "  -" : "");
                 if(sc.team != TEAM_SPECT)
                 {
                     int t = team_base(sc.team);
@@ -4558,9 +4558,9 @@ void loggamestatus(const char *reason)
     }
     if(m_teammode)
     {
-        loopi(2) mlog(ACLOG_INFO, "Team %4s:%3d players,%5d frags%c%5d flags", team_string(i), pnum[i], fragscore[i], m_flags_ ? ',' : '\0', flagscore[i]);
+        loopi(2) mlog(DSLOG_INFO, "Team %4s:%3d players,%5d frags%c%5d flags", team_string(i), pnum[i], fragscore[i], m_flags_ ? ',' : '\0', flagscore[i]);
     }
-    mlog(ACLOG_INFO, "");
+    mlog(DSLOG_INFO, "");
 }
 
 static unsigned char chokelog[MAXCLIENTS + 1] = { 0 };
@@ -4621,7 +4621,7 @@ void linequalitystats(int elapsed)
             chokelog[i] = (s << 4) + c;
             concatformatstring(msg, "%02X ", chokelog[i]);
         }
-        mlog(ACLOG_DEBUG, "%s] +%d", msg, ncs);
+        mlog(DSLOG_DEBUG, "%s] +%d", msg, ncs);
     }
 }
 
@@ -4732,7 +4732,7 @@ void serverslice(uint timeout)   // main server update, called from cube main lo
         if(nonlocalclients || serverhost->totalSentData || serverhost->totalReceivedData)
         {
             if(nonlocalclients) loggamestatus(NULL);
-            mlog(ACLOG_INFO, "Status at %s: %d remote clients, %.1f send, %.1f rec (K/sec);"
+            mlog(DSLOG_INFO, "Status at %s: %d remote clients, %.1f send, %.1f rec (K/sec);"
                                          " Ping: #%d|%d|%d; CSL: #%d|%d|%d (bytes)",
                                           timestring(true, "%d-%m-%Y %H:%M:%S"), nonlocalclients, serverhost->totalSentData/60.0f/1024, serverhost->totalReceivedData/60.0f/1024,
                                           mnum, msend, mrec, cnum, csend, crec);
@@ -4777,7 +4777,7 @@ void serverslice(uint timeout)   // main server update, called from cube main lo
                 copystring(c.country, gi ? gi : "--", 3);
                 filtercountrycode(c.country, c.country);
                 entropy_add_byte(c.ip);
-                mlog(ACLOG_INFO,"[%s] client connected (%s)", c.hostname, c.country);
+                mlog(DSLOG_INFO,"[%s] client connected (%s)", c.hostname, c.country);
                 sendservinfo(c);
                 totalclients++;
                 break;
@@ -4993,9 +4993,9 @@ void quitproc(int param)
 
 const char *loglevelnames[] = { "debug", "verbose", "info", "warning", "error", "disabled", "" };
 
-SERVPARLISTF(logthreshold_console, 0, ACLOG_INFO, 0, loglevelnames, restartlogging, "CConsole log level");
-SERVPARLISTF(logthreshold_syslog, 0, ACLOG_NUM, 0, loglevelnames, restartlogging, "CSyslog log level");
-SERVPARLISTF(logthreshold_file, 0, ACLOG_INFO, 0, loglevelnames, restartlogging, "CLogfile log level");
+SERVPARLISTF(logthreshold_console, 0, DSLOG_INFO, 0, loglevelnames, restartlogging, "CConsole log level");
+SERVPARLISTF(logthreshold_syslog, 0, DSLOG_NUM, 0, loglevelnames, restartlogging, "CSyslog log level");
+SERVPARLISTF(logthreshold_file, 0, DSLOG_INFO, 0, loglevelnames, restartlogging, "CLogfile log level");
 SERVSTAT(stat_mainlog_peaklevel, 0, "lMain log peak fill level (0..100%)");
 SERVSTAT(stat_theadlog_peaklevel, 0, "lThreadlog peak fill level (0..100%)");
 
@@ -5025,18 +5025,18 @@ void initserver(bool dedicated)
     if(scl.maxdemos > 0) initserverparameter("demo_max_number", scl.maxdemos);
 
     // start logging
-    initserverparameter("logthreshold_console", scl.verbose > 1 ? ACLOG_DEBUG : (scl.verbose ? ACLOG_VERBOSE : ACLOG_INFO));
+    initserverparameter("logthreshold_console", scl.verbose > 1 ? DSLOG_DEBUG : (scl.verbose ? DSLOG_VERBOSE : DSLOG_INFO));
     initserverparameter("logthreshold_syslog", scl.syslogthres);
     initserverparameter("logthreshold_file", scl.filethres);
     if((isdedicated = dedicated))
     {
         restartlogging();
-        if(!logcheck(ACLOG_ERROR)) printf("WARNING: logging not started!\n");
+        if(!logcheck(DSLOG_ERROR)) printf("WARNING: logging not started!\n");
     }
-    mlog(ACLOG_INFO, "logging local AssaultCube server (version %d, protocol %d/%d) now..", AC_VERSION, SERVER_PROTOCOL_VERSION, EXT_VERSION);
+    mlog(DSLOG_INFO, "logging local Dune Strike server (version %d, protocol %d/%d) now..", DS_VERSION, SERVER_PROTOCOL_VERSION, EXT_VERSION);
 
     if(scl.voice) sv_voice = 1;
-    mlog(ACLOG_INFO, "in-game voice chat is %s", sv_voice ? "enabled (clients mix simultaneous speakers)" : "disabled (start with -R to enable)");
+    mlog(DSLOG_INFO, "in-game voice chat is %s", sv_voice ? "enabled (clients mix simultaneous speakers)" : "disabled (start with -R to enable)");
 
     copystring(sg->servdesc_current, scl.servdesc_full);
     servermsinit(dedicated);
@@ -5046,12 +5046,12 @@ void initserver(bool dedicated)
         serverparameters.init(scl.parfilepath);
         if(serverparameters.load()) serverparameters.read(); // do this early, so the parameters are properly set during initialisation
         ENetAddress address = { ENET_HOST_ANY, (enet_uint16)scl.serverport };
-        if(scl.ip[0] && enet_address_set_host(&address, scl.ip)<0) mlog(ACLOG_WARNING, "server ip not resolved!");
+        if(scl.ip[0] && enet_address_set_host(&address, scl.ip)<0) mlog(DSLOG_WARNING, "server ip not resolved!");
         serverhost = enet_host_create(&address, scl.maxclients+1, 3, 0, scl.uprate);
         if(!serverhost) fatal("could not create server host");
         loopi(scl.maxclients) serverhost->peers[i].data = (void *)-1;
 
-        if(scl.ssk) mlog(ACLOG_INFO,"server public key: %s", servpubkey);
+        if(scl.ssk) mlog(DSLOG_INFO,"server public key: %s", servpubkey);
         formatstring(vitafilename)("%s.cfg", scl.vitabasename);
         formatstring(vitafilename_backup)("%s_bak.cfg", scl.vitabasename);
         formatstring(vitafilename_update)("%s_update.cfg", scl.vitabasename);
@@ -5060,7 +5060,7 @@ void initserver(bool dedicated)
         char *vn;
         int gotvitas = readvitas((vn = vitafilename));
         if(gotvitas < 0) gotvitas = readvitas((vn = vitafilename_backup));
-        if(gotvitas >= 0) mlog(ACLOG_INFO, "read %d player vitas from %s", gotvitas, vn);
+        if(gotvitas >= 0) mlog(DSLOG_INFO, "read %d player vitas from %s", gotvitas, vn);
         maprot.init(scl.maprotfile);
         passwords.init(scl.pwdfile, scl.adminpasswd);
         ipblacklist.init(scl.blfile);
@@ -5069,19 +5069,19 @@ void initserver(bool dedicated)
         forbiddenlist.init(scl.forbidden);
         serverinfoinfo.init(scl.infopath, MAXTRANS / 2);
         serverinfomotd.init(scl.motdpath, MAXSTRLEN - 5);
-        mlog(ACLOG_VERBOSE, "holding up to %d recorded demos in memory", demo_max_number);
-        if(demo_save) mlog(ACLOG_VERBOSE,"all recorded demos will be written to: \"%s\"", demo_path);
-        if(scl.voteperm[0]) mlog(ACLOG_VERBOSE,"vote permission string: \"%s\"", scl.voteperm);
-        if(scl.mapperm[0]) mlog(ACLOG_VERBOSE,"map permission string: \"%s\"", scl.mapperm);
-        mlog(ACLOG_VERBOSE,"server description: \"%s\"", scl.servdesc_full);
-        if(scl.servdesc_pre[0] || scl.servdesc_suf[0]) mlog(ACLOG_VERBOSE,"custom server description: \"%sCUSTOMPART%s\"", scl.servdesc_pre, scl.servdesc_suf);
-        mlog(ACLOG_VERBOSE,"maxclients: %d, kick threshold: %d, ban threshold: %d", scl.maxclients, scl.kickthreshold, scl.banthreshold);
-        if(scl.master) mlog(ACLOG_VERBOSE,"master server URL: \"%s\"", scl.master);
-        if(scl.serverpassword[0]) mlog(ACLOG_VERBOSE,"server password: \"%s\"", hiddenpwd(scl.serverpassword));
+        mlog(DSLOG_VERBOSE, "holding up to %d recorded demos in memory", demo_max_number);
+        if(demo_save) mlog(DSLOG_VERBOSE,"all recorded demos will be written to: \"%s\"", demo_path);
+        if(scl.voteperm[0]) mlog(DSLOG_VERBOSE,"vote permission string: \"%s\"", scl.voteperm);
+        if(scl.mapperm[0]) mlog(DSLOG_VERBOSE,"map permission string: \"%s\"", scl.mapperm);
+        mlog(DSLOG_VERBOSE,"server description: \"%s\"", scl.servdesc_full);
+        if(scl.servdesc_pre[0] || scl.servdesc_suf[0]) mlog(DSLOG_VERBOSE,"custom server description: \"%sCUSTOMPART%s\"", scl.servdesc_pre, scl.servdesc_suf);
+        mlog(DSLOG_VERBOSE,"maxclients: %d, kick threshold: %d, ban threshold: %d", scl.maxclients, scl.kickthreshold, scl.banthreshold);
+        if(scl.master) mlog(DSLOG_VERBOSE,"master server URL: \"%s\"", scl.master);
+        if(scl.serverpassword[0]) mlog(DSLOG_VERBOSE,"server password: \"%s\"", hiddenpwd(scl.serverpassword));
 #ifdef ACAC
-        mlog(ACLOG_INFO, "anticheat: enabled");
+        mlog(DSLOG_INFO, "anticheat: enabled");
 #else
-        mlog(ACLOG_INFO, "anticheat: disabled");
+        mlog(DSLOG_INFO, "anticheat: disabled");
 #endif
     }
 
@@ -5093,15 +5093,15 @@ void initserver(bool dedicated)
         SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
         #endif
         // kill -2 / Ctrl-C - see http://msdn.microsoft.com/en-us/library/xdkz3x12%28v=VS.100%29.aspx (or VS-2008?) for caveat (seems not to pertain to AC - 2011feb05:ft)
-        if (signal(SIGINT, quitproc) == SIG_ERR) mlog(ACLOG_INFO, "Cannot handle SIGINT!");
+        if (signal(SIGINT, quitproc) == SIG_ERR) mlog(DSLOG_INFO, "Cannot handle SIGINT!");
         // kill -15 / probably process-manager on Win32 *shrug*
-        if (signal(SIGTERM, quitproc) == SIG_ERR) mlog(ACLOG_INFO, "Cannot handle SIGTERM!");
+        if (signal(SIGTERM, quitproc) == SIG_ERR) mlog(DSLOG_INFO, "Cannot handle SIGTERM!");
         #ifndef WIN32
         // kill -1
-        if (signal(SIGHUP, quitproc) == SIG_ERR) mlog(ACLOG_INFO, "Cannot handle SIGHUP!");
+        if (signal(SIGHUP, quitproc) == SIG_ERR) mlog(DSLOG_INFO, "Cannot handle SIGHUP!");
         #endif
-        mlog(ACLOG_INFO, "dedicated server started, waiting for clients...");
-        mlog(ACLOG_INFO, "Ctrl-C to exit"); // this will now actually call the atexit-hooks below - thanks to SIGINT hooked above - noticed and signal-code-docs found by SKB:2011feb05:ft:
+        mlog(DSLOG_INFO, "dedicated server started, waiting for clients...");
+        mlog(DSLOG_INFO, "Ctrl-C to exit"); // this will now actually call the atexit-hooks below - thanks to SIGINT hooked above - noticed and signal-code-docs found by SKB:2011feb05:ft:
         atexit(enet_deinitialize);
         atexit(cleanupserver);
         enet_time_set(0);
@@ -5128,8 +5128,8 @@ void localservertoclient(int chan, uchar *buf, int len, bool demo) {}
 void fatal(const char *s, ...)
 {
     defvformatstring(msg,s,s);
-    defformatstring(out)("AssaultCube fatal error: %s", msg);
-    xlog(ACLOG_ERROR, "%s", out);
+    defformatstring(out)("Dune Strike fatal error: %s", msg);
+    xlog(DSLOG_ERROR, "%s", out);
     puts(out);
     cleanupserver();
     fflush(NULL);

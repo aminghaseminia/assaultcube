@@ -4,7 +4,7 @@ gib.ogg is originally sourced from the TREMULOUS download package.
 The original file is found in this place in their packaging:
 	./base/data*.pk3/sound/buildables/alien/explosion.wav
 
-Please note: After this file was included in AssaultCube, it has come to be known that
+Please note: After this file was included in Dune Strike, it has come to be known that
 TREMULOUS do not know the original source or license of the file, as can be read here:
 	http://tremulous.net/wiki/Sound_Licenses
 

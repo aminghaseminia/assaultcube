@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="AssaultCube" />
+		<Option title="Dune Strike" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<MakeCommands>
@@ -15,7 +15,7 @@
 		</MakeCommands>
 		<Build>
 			<Target title="default">
-				<Option output="../../bin_win32/ac_client.exe" prefix_auto="0" extension_auto="0" />
+				<Option output="../../bin_win32/dunestrike_client.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="../../" />
 				<Option object_output=".objs/default" />
 				<Option type="1" />
@@ -48,7 +48,7 @@
 				</Linker>
 			</Target>
 			<Target title="debug">
-				<Option output="../../bin_win32/ac_client.exe" prefix_auto="0" extension_auto="0" />
+				<Option output="../../bin_win32/dunestrike_client.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="../../" />
 				<Option object_output=".objs/debug" />
 				<Option type="1" />
@@ -83,7 +83,7 @@
 				</Linker>
 			</Target>
 			<Target title="server">
-				<Option output="../../bin_win32/ac_server.exe" prefix_auto="0" extension_auto="0" />
+				<Option output="../../bin_win32/dunestrike_server.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="../../" />
 				<Option object_output=".objs/server" />
 				<Option type="1" />
@@ -110,7 +110,7 @@
 				</Linker>
 			</Target>
 			<Target title="server-debug">
-				<Option output="../../bin_win32/ac_server.exe" prefix_auto="0" extension_auto="0" />
+				<Option output="../../bin_win32/dunestrike_server.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="../../" />
 				<Option object_output=".objs/server-debug" />
 				<Option type="1" />
@@ -139,7 +139,7 @@
 				</Linker>
 			</Target>
 			<Target title="master">
-				<Option output="../../bin_win32/ac_master.exe" prefix_auto="0" extension_auto="0" />
+				<Option output="../../bin_win32/dunestrike_master.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="../../" />
 				<Option object_output=".objs/master" />
 				<Option type="1" />
@@ -595,7 +595,7 @@
 			<Option target="default" />
 			<Option target="debug" />
 		</Unit>
-		<Unit filename="../vcpp/assaultcube.rc">
+		<Unit filename="../vcpp/dunestrike.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
 		<Extensions>

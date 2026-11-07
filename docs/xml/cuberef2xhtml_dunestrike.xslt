@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:transform version="1.0" xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:t="https://assault.cubers.net/docs/xml">
+<xsl:transform version="1.0" xmlns="http://www.w3.org/1999/xhtml" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:t="https://github.com/aminghaseminia/dunestrike/docs/xml">
 <!-- 
   This file transforms the ../reference.xml document into an XHTML webpage.
 
@@ -9,7 +9,7 @@
 
   You may be able to redistribute this content under specific
   conditions. Please read the licensing information, available
-  at https://assault.cubers.net/docs/license.html for the
+  at https://github.com/aminghaseminia/dunestrike/docs/license.html for the
   conditions that would apply to what you may be redistributing.
 -->
 
@@ -52,9 +52,9 @@
         <meta name="robots" content="NOODP" />
         <meta name="author" content="Rabid Viper Productions" />
         <meta name="copyright" content="You may be able to redistribute this content under specific conditions.
-        Please read the licensing information, available @ https://assault.cubers.net/docs/license.html for the
+        Please read the licensing information, available @ https://github.com/aminghaseminia/dunestrike/docs/license.html for the
         conditions that would apply to what you may be redistributing." />
-        <title>AssaultCube Documentation :: CubeScript</title>
+        <title>Dune Strike Documentation :: CubeScript</title>
         <link rel="stylesheet" href="css/main.css" />
         <link rel="stylesheet" href="css/docs.css" />
         <link rel="stylesheet" href="css/referencexml.css" />
@@ -63,11 +63,11 @@
       <body>
         <div id="container">
           <div id="docsheader">
-            AssaultCube Documentation
+            Dune Strike Documentation
           </div>
           <div id="logo">
             <a href="index.html"><img src="images/aclogo.png"
-            alt="AssaultCube" width="193px" height="81px" /></a>
+            alt="Dune Strike" width="193px" height="81px" /></a>
           </div>
           <div id="menubar">
             &#160;
@@ -83,7 +83,7 @@
               CubeScript
             </h2>
             <p>
-              CubeScript is the scripting language of AssaultCube and it is similar to scripting languages of other games, except
+              CubeScript is the scripting language of Dune Strike and it is similar to scripting languages of other games, except
               that its a bit more powerful because it is almost a full programming language.
             </p>
             <p>

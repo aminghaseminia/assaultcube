@@ -62,17 +62,17 @@ extern int hwtexsize, hwmaxaniso;
 extern int maploaded, msctrl;
 extern float waterlevel;
 
-#define AC_MASTER_URI "ms.cubers.net"
+#define DS_MASTER_URI "master.invalid"
 
 // uncomment this line for production release
 //#define PRODUCTION
 
 #ifdef PRODUCTION
-	#define AC_VERSION 1302
-	#define AC_MASTER_PORT 28760
+	#define DS_VERSION 1302
+	#define DS_MASTER_PORT 28760
 #else
-	#define AC_VERSION -(1302)
-	#define AC_MASTER_PORT 28758
+	#define DS_VERSION -(1302)
+	#define DS_MASTER_PORT 28758
 #endif
 
 #define MAXCLIENTSONMASTER 16           // FIXME

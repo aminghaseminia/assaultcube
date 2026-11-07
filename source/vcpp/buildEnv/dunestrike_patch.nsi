@@ -50,15 +50,15 @@ SetCompressor /SOLID lzma
 !define CURPATH ".\" ; must include the installer graphics and the AC_NEWPATCHDIR directory
 !define AC_FULLVERSIONINT "1.2.0.2"
 !define AC_FULLVERSION "v${AC_FULLVERSIONINT}"
-!define AC_SHORTNAME "AssaultCube"
-!define AC_FULLNAME "AssaultCube ${AC_FULLVERSIONINT}"
-!define AC_FULLNAMESAVE "AssaultCube_${AC_FULLVERSION}"
+!define AC_SHORTNAME "Dune Strike"
+!define AC_FULLNAME "Dune Strike ${AC_FULLVERSIONINT}"
+!define AC_FULLNAMESAVE "Dune Strike_${AC_FULLVERSION}"
 !define AC_MAJORVERSIONINT 1
 !define AC_MINORVERSIONINT 2
 !define AC_NEWPATCHDIR "AC_patch" ; directory with prepared new AC patch
 
 Name "${AC_SHORTNAME}"
-OutFile "AssaultCube_${AC_FULLVERSION}-Update.exe"
+OutFile "Dune Strike_${AC_FULLVERSION}-Update.exe"
 InstallDir "$PROGRAMFILES\${AC_SHORTNAME}"
 InstallDirRegKey HKLM "Software\${AC_SHORTNAME}" ""
 !define ARP "Software\Microsoft\Windows\CurrentVersion\Uninstall\${AC_SHORTNAME}"
@@ -219,7 +219,7 @@ FunctionEnd
 
 Function .onInstSuccess
 
-    StrCpy $0 "http://assault.cubers.net/releasenotes/v${AC_MAJORVERSIONINT}.${AC_MINORVERSIONINT}/"
+    StrCpy $0 "http://github.com/aminghaseminia/dunestrike/releasenotes/v${AC_MAJORVERSIONINT}.${AC_MINORVERSIONINT}/"
     Call openLinkNewWindow
 
 FunctionEnd
@@ -292,12 +292,12 @@ Function WelcomePage
 	
 	SendMessage $IMAGECTL ${STM_SETIMAGE} ${IMAGE_BITMAP} $IMAGE
 
-	nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 10u -130u 20u "Welcome to the AssaultCube Update Wizard"
+	nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 10u -130u 20u "Welcome to the Dune Strike Update Wizard"
 	Pop $HEADLINE
 
 	SendMessage $HEADLINE ${WM_SETFONT} $HEADLINE_FONT 0
 
-	nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 32u -130u -32u "This wizard will guide you through the update of AssaultCube ${AC_FULLVERSIONINT}.$\r$\n$\r$\nClick Next to continue."
+	nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 32u -130u -32u "This wizard will guide you through the update of Dune Strike ${AC_FULLVERSIONINT}.$\r$\n$\r$\nClick Next to continue."
 	Pop $TEXT
 
 	SetCtlColors $DIALOG "" 0xffffff
@@ -318,7 +318,7 @@ Function WelcomePage
 	ClearErrors
 	ReadRegStr $0 HKLM "Software\${AC_SHORTNAME}" ""
 	IfErrors 0 success
-	MessageBox MB_OK|MB_ICONSTOP "Could not find an existing installation of AssaultCube that could be updated with this Update package. Please get the full package at http://assault.cubers.net/download.html"
+	MessageBox MB_OK|MB_ICONSTOP "Could not find an existing installation of Dune Strike that could be updated with this Update package. Please get the full package at http://github.com/aminghaseminia/dunestrike/download.html"
 	Quit
 	success:
 
@@ -344,12 +344,12 @@ Function FinishPage
 	
 	SendMessage $IMAGECTL ${STM_SETIMAGE} ${IMAGE_BITMAP} $IMAGE
 
-	nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 10u -130u 20u "Completing the AssaultCube Setup Wizard"
+	nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 10u -130u 20u "Completing the Dune Strike Setup Wizard"
 	Pop $HEADLINE
 
 	SendMessage $HEADLINE ${WM_SETFONT} $HEADLINE_FONT 0
 
-	nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 32u -130u -32u "AssaultCube has been installed on your computer.$\r$\n$\r$\nClick Finish to close this wizard."
+	nsDialogs::CreateControl /NOUNLOAD STATIC ${WS_VISIBLE}|${WS_CHILD}|${WS_CLIPSIBLINGS} 0 120u 32u -130u -32u "Dune Strike has been installed on your computer.$\r$\n$\r$\nClick Finish to close this wizard."
 	Pop $TEXT
 
 	SetCtlColors $DIALOG "" 0xffffff
@@ -368,7 +368,7 @@ FunctionEnd
 
 ; Installer Sections
 
-Section "AssaultCube ${AC_FULLVERSIONINT} Update" PATCH
+Section "Dune Strike ${AC_FULLVERSIONINT} Update" PATCH
 
     SectionIn RO
 
@@ -393,6 +393,6 @@ SectionEnd
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 
-    !insertmacro MUI_DESCRIPTION_TEXT ${PATCH} "Updates the AssaultCube core files"
+    !insertmacro MUI_DESCRIPTION_TEXT ${PATCH} "Updates the Dune Strike core files"
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_END

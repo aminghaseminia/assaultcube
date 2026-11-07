@@ -1,4 +1,4 @@
-# convert geo-ip lists from software77 for Assaultcube servers
+# convert geo-ip lists from software77 for Dune Strike servers
 # 
 # expects to process IPV4-CSV lists from Webnet77 (please consider donations, if you use their lists)
 #

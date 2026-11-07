@@ -420,6 +420,6 @@
     </CustomBuildStep>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="assaultcube.rc" />
+    <ResourceCompile Include="dunestrike.rc" />
   </ItemGroup>
 </Project>

@@ -1,20 +1,20 @@
 # In-game voice chat
 
 Push-to-talk voice chat for multiplayer games. On the client it is **on by
-default**; the server script enables it too, so `./server.sh` is enough. Any
+default**; the server script enables it too, so `./dunestrike-server.sh` is enough. Any
 number of players can hold X at the same time and everyone hears all of them.
 
 ## Quick start
 
-**Server** — `server.sh` passes `-R` for you:
+**Server** — `dunestrike-server.sh` passes `-R` for you:
 
 ```sh
-./server.sh
+./dunestrike-server.sh
 ```
 
 If you run the server binary yourself, pass `-R` to it.
 
-AssaultCube command-line flags must be attached to their values: `-c10`, not
+Dune Strike command-line flags must be attached to their values: `-c10`, not
 `-c 10`; `-n"Name"`, not `-n "Name"`.
 
 Without `-R` (or with `-R0`) the server stays silent and clients are told
@@ -59,7 +59,7 @@ Practical consequences:
 | `voicechat` | `1` | Master switch. F9 toggles it and it is saved. |
 | `voicevolume` | `100` | Playback volume, 0–200 %. |
 | `voiceinputgain` | `100` | Microphone gain, 0–300 %. |
-| `sv_voice` | `1` | Server switch, set by `server.sh` (`-R`). Disable with `-R0`. |
+| `sv_voice` | `1` | Server switch, set by `dunestrike-server.sh` (`-R`). Disable with `-R0`. |
 | `sv_voiceteam` | `0` | `1` = only teammates hear each other (listen-server builds). |
 
 Change the keys in `config/autoexec.cfg`:
@@ -77,8 +77,8 @@ The existing scoreboard **mute/ignore** also silences that player's voice.
   hear themselves, and with several talkers that gets worse quickly.
 - A microphone the OS can access. On macOS grant microphone permission to the
   game (or to the terminal/app that launches it).
-- For voice itself, both sides need this build. Stock AssaultCube clients can
-  still connect and play; they simply never send or receive voice.
+- For voice itself, both sides need this build. Unpatched clients from the original
+  build can still connect and play; they simply never send or receive voice.
 
 ## What it costs
 
@@ -94,11 +94,11 @@ number of simultaneous talkers low.
 ## How it works (and why it is safe)
 
 - The client probes the server with the standard `SV_EXTENSION` message
-  (`acvoice::hello`). Stock servers ignore unknown extensions.
-- Only a server that answers with `SV_VOICESUPPORT` is sent voice data. Stock
+  (`dsvoice::hello`). Unpatched servers ignore unknown extensions.
+- Only a server that answers with `SV_VOICESUPPORT` is sent voice data. Unpatched
   clients never send the probe, so they never receive any of the new messages.
 - Four message types were added at the end of the protocol, and
-  `PROTOCOL_VERSION` was **not** changed. Patched and stock copies still
+  `PROTOCOL_VERSION` was **not** changed. Patched and unpatched copies still
   interoperate; voice is simply unavailable in a mixed pair.
 - The server never decodes audio. It relays frames and applies a per-client
   token-bucket rate limit.

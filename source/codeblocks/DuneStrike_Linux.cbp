@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
     <FileVersion major="1" minor="6" />
     <Project>
-        <Option title="AssaultCube" />
+        <Option title="Dune Strike" />
         <Option makefile_is_custom="1" />
         <Option execution_dir="../src" />
         <Option working_dir="../.." />
@@ -31,7 +31,7 @@
             </Target>
             <Target title="Release">
                 <Option platforms="Unix;" />
-                <Option output="../../bin_unix/native_client" prefix_auto="1" extension_auto="1" />
+                <Option output="../../bin_unix/dunestrike_client" prefix_auto="1" extension_auto="1" />
                 <Option type="1" />
                 <Option compiler="clang" />
                 <Compiler>

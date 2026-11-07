@@ -15,7 +15,7 @@ http://www.gnu.org/licenses/gpl-2.0.txt
 
 
 ------------OTHER LICENSES------------
-AC readme:                                source/README.txt
+Dune Strike readme:                                source/README.txt
 CUBE readme:                              source/README_CUBEENGINE.txt
 Cube Bots readme:                         docs/cube_bot-readme.txt
 ENet license:                             source/enet/LICENSE
