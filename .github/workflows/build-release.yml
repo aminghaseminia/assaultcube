@@ -104,7 +104,7 @@ jobs:
             CXX=i686-w64-mingw32-g++ \
             WINDRES=i686-w64-mingw32-windres \
             'CXXFLAGS=-O3 -fomit-frame-pointer -Wall -fsigned-char' \
-            'CLIENT_LIBS=-mwindows -L../enet/.libs -lenet -L../lib -lSDL2 -lSDL2_image -lzdll -lopengl32 -lOpenAL32 -llibvorbisfile -lws2_32 -lwinmm' \
+            'CLIENT_LIBS=-mwindows -L../enet/.libs -lenet -L../lib -lSDL2main -lSDL2 -lSDL2_image -lvorbisfile -lzdll -lopengl32 -lOpenAL32 -lws2_32 -lwinmm' \
             'SERVER_LIBS=-L../enet/.libs -lenet -L../lib -lzdll -lSDL2 -lws2_32 -lwinmm'
           file ../../bin_win32/ac_client.exe ../../bin_win32/ac_server.exe
 
