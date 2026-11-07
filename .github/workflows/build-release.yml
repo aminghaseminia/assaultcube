@@ -105,7 +105,7 @@ jobs:
             WINDRES=i686-w64-mingw32-windres \
             'CXXFLAGS=-O3 -fomit-frame-pointer -Wall -fsigned-char' \
             'CLIENT_LIBS=-mwindows -L../enet/.libs -lenet -L../lib -lSDL2 -lSDL2_image -lzdll -lopengl32 -lOpenAL32 -llibvorbisfile -lws2_32 -lwinmm' \
-            'SERVER_LIBS=-L../enet/.libs -lenet -L../lib -lzdll -lws2_32 -lwinmm'
+            'SERVER_LIBS=-L../enet/.libs -lenet -L../lib -lzdll -lSDL2 -lws2_32 -lwinmm'
           file ../../bin_win32/ac_client.exe ../../bin_win32/ac_server.exe
 
       - name: Package game archive (zip)
@@ -152,11 +152,13 @@ jobs:
           ./configure --enable-shared=no --enable-static=yes
           make -j4
           cd ../src
+          SDL_CFLAGS="$(sdl2-config --cflags)"
+          SDL_LIBS="$(sdl2-config --libs)"
           make -j4 client server \
             CXX=clang++ \
-            'CLIENT_LIBS=-L../enet/.libs -lenet -lSDL2_image -lvorbisfile -lz -framework OpenGL -framework OpenAL -framework AudioToolbox' \
-            'SERVER_INCLUDES=-DSTANDALONE -I. -Ibot -I../enet/include' \
-            'SERVER_LIBS=-L../enet/.libs -lenet -lz'
+            "CLIENT_LIBS=-L../enet/.libs -lenet $SDL_LIBS -lSDL2_image -lvorbisfile -lz -framework OpenGL -framework OpenAL -framework AudioToolbox" \
+            "SERVER_INCLUDES=-DSTANDALONE -I. -Ibot -I../enet/include $SDL_CFLAGS" \
+            "SERVER_LIBS=-L../enet/.libs -lenet $SDL_LIBS -lz"
           file ac_client ac_server
           install -d ../../bin_unix
           install -m755 ac_client ../../bin_unix/native_client
