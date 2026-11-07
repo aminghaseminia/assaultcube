@@ -64,6 +64,7 @@ jobs:
           # re-pack adding the built binaries (bin_unix is git-ignored)
           cd /tmp && rm -rf acpack && mkdir acpack && cd acpack
           tar xzf "$GITHUB_WORKSPACE/$TAR"
+          rm -rf ./bin_unix
           cp -R "$GITHUB_WORKSPACE/bin_unix" ./bin_unix
           tar czf "$GITHUB_WORKSPACE/$TAR" .
           echo "TAR=$TAR" >> "$GITHUB_ENV"
@@ -103,7 +104,7 @@ jobs:
             PLATFORM=MINGW \
             CXX=i686-w64-mingw32-g++ \
             WINDRES=i686-w64-mingw32-windres \
-            'CXXFLAGS=-O3 -fomit-frame-pointer -Wall -fsigned-char' \
+            'CXXFLAGS=-O3 -fomit-frame-pointer -Wall -fsigned-char -static-libgcc -static-libstdc++' \
             'CLIENT_LIBS=-mwindows -L../enet/.libs -lenet -L../lib -lSDL2main -lSDL2 -lSDL2_image -lvorbisfile -lzdll -lopengl32 -lOpenAL32 -lws2_32 -lwinmm' \
             'SERVER_LIBS=-L../enet/.libs -lenet -L../lib -lzdll -lSDL2 -lws2_32 -lwinmm'
           file ../../bin_win32/ac_client.exe ../../bin_win32/ac_server.exe
@@ -144,7 +145,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install sdl2 sdl2_image libvorbis automake autoconf libtool pkg-config
+          brew install sdl2 sdl2_image libvorbis automake autoconf libtool pkg-config dylibbundler
 
       - name: Build client + server
         run: |
@@ -164,6 +165,14 @@ jobs:
           install -m755 ac_client ../../bin_unix/native_client
           install -m755 ac_server ../../bin_unix/native_server
 
+      - name: Bundle macOS libraries
+        run: |
+          dylibbundler -od -b \
+            -x bin_unix/native_client \
+            -x bin_unix/native_server \
+            -d bin_unix/libs \
+            -p @executable_path/libs
+
       - name: Package game archive (zip)
         run: |
           if [ -n "${{ github.event.inputs.version }}" ]; then VER="${{ github.event.inputs.version }}"; else VER="${GITHUB_REF_NAME#v}"; fi
@@ -171,6 +180,7 @@ jobs:
           git archive --format=zip -o "$ZIP" HEAD
           mkdir -p /tmp/acpack && rm -rf /tmp/acpack/* && cd /tmp/acpack
           unzip -q "$GITHUB_WORKSPACE/$ZIP"
+          rm -rf ./bin_unix
           cp -R "$GITHUB_WORKSPACE/bin_unix" ./bin_unix
           zip -qr "$GITHUB_WORKSPACE/$ZIP" .
           echo "ZIP=$ZIP" >> "$GITHUB_ENV"
