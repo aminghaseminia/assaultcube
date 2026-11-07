@@ -43,7 +43,7 @@ Everything below exists to make that flow safe. Do not break it.
 
 ## CI release pipeline (`.github/workflows/build-release.yml`)
 
-- Trigger: pushing a tag `v*` → builds Linux + Windows + macOS, creates the release, uploads the three archives (`--clobber`, re-runs are safe). Manual `workflow_dispatch` also exists (typed version; creates the tag itself).
+- Trigger: **push to `main`** rebuilds Linux + Windows + macOS and updates the versioned release automatically (the workflow moves the `v<version>` tag to the new commit). Pushing a tag `v*` or running `workflow_dispatch` builds an exact version. Assets are uploaded with `--clobber`, so re-runs are safe.
 - Keep the "Enable production build" sed step — without it the shipped binaries are dev builds (negative version, wrong master port).
 - **Windows job** (mingw cross, i686/32-bit — matches the shipped `bin_win32` DLLs):
   - `-rdynamic` must be stripped from `source/src/Makefile` (Linux-only flag, the Makefile `override`s it in).
