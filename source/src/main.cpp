@@ -1225,7 +1225,9 @@ int main(int argc, char **argv)
     // VS2017+ does not support %n in format strings by default due to security concerns.
     // However, currently we are making use of this functionality and therefore it is being enabled below.
     // In the future we should get rid of this. See also https://docs.microsoft.com/en-us/previous-versions/hf4y5e3w(v=vs.140)?redirectedfrom=MSDN
+    #ifndef __GNUC__
     _set_printf_count_output(1);
+    #endif
     #endif
 
     bool dedicated = false;
