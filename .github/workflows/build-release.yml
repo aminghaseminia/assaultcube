@@ -118,6 +118,12 @@ jobs:
           unzip -q "$GITHUB_WORKSPACE/$ZIP"
           cp "$GITHUB_WORKSPACE/bin_win32/ac_client.exe" ./bin_win32/
           cp "$GITHUB_WORKSPACE/bin_win32/ac_server.exe" ./bin_win32/
+          # MinGW runtime DLLs the client still imports (libstdc++ is static).
+          for f in libgcc_s_dw2-1.dll libwinpthread-1.dll; do
+            p=$(find /usr -name "$f" | head -1)
+            test -n "$p" || { echo "missing $f"; exit 1; }
+            cp "$p" ./bin_win32/
+          done
           zip -qr "$GITHUB_WORKSPACE/$ZIP" .
           echo "ZIP=$ZIP" >> "$GITHUB_ENV"
 
